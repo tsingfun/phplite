@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ EMS引擎错误报告</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<style type="text/css">
+		div.error{ height:40%; padding:5px; }
+		#errDetailFrame{height:55%;}
+	</style>
+	<script type="text/javascript">
+	
+	// 初始化
+	$().ready( function(){
+		
+	 	// 表格点击选中行
+	    $('table.selectable tr').click(function () {
+	    	if ($(this).parent().find('tr').children('td').eq(0).html() == '暂无数据') return;
+	        var trSeq = $(this).parent().find('tr').index($(this));
+	        if (trSeq > 0){
+	        	$(this).parent().find('tr').removeClass('selected');
+	        	$(this).addClass('selected');
+
+	        	// 请求应用列表
+	        	document.getElementById("errDetailFrame").src = '/hostapp.php?method=ems_error_detail&EngineID=<?php echo $EngineID;?>&AlarmType=' + $(this).children('td').eq(3).text();
+	        }
+	    })
+	    
+	});
+	</script>
+</head>
+
+<body>
+
+<div class="error">
+	<div class="table_title"><i>&nbsp;</i>错误报告</div>
+	<table class="table1 selectable" style="min-width:1000px;">
+		<tr>
+			<th>序号</th>
+			<th>服务名称</th>
+			<th>实例ID</th>
+			<th>错误类型</th>
+			<th>错误类型<br/>名字</th>
+			<th>历史总<br/>发生次数</th>
+			<th>当日<br/>发生次数</th>
+			<th>最后一次错误<br/>详情</th>
+			<th>最后一次错误<br/>发生时间</th>
+			<th>最后一次解决<br/>错误时间</th>
+			<th>是否有错误</th>
+			<th>是否已经<br/>送到Eagle</th>
+			<th>是否已发送<br/>报警邮件</th>
+		</tr>
+		<?php if (!empty($data_reportlist) && isset($data_reportlist['Result'])) : ?>
+		<?php $i = 0; ?>
+		<?php foreach($data_reportlist['Result'] as $r): ?>
+			<tr>
+				<td><?php echo ++$i; ?></td>
+				<td><?php echo $r['ServiceName'] ?></td>
+				<td><?php echo $r['InstanceID'] ?></td>
+				<td><?php echo $r['ErrorID'] ?></td>
+				<td><?php echo $r['ErrorName'] ?></td>
+				<td><?php echo $r['TotalCount'] ?></td>
+				<td><?php echo $r['TodayCount'] ?></td>
+				<td class="left" title="<?php echo $r['LastErrorInfo'] ?>"><?php echo str_cut($r['LastErrorInfo'], 50) ?></td>
+				<td><?php echo $r['LastErrorTime'] ?></td>
+				<td><?php echo $r['LastSettleTime'] ?></td>
+				<td><?php echo $r['HaveError']?'是':'否' ?></td>
+				<td><?php echo $r['HaveSentEagle']?'是':'否' ?></td>
+				<td><?php echo $r['HaveSendEmal']?'是':'否' ?></td>
+			</tr>
+			<?php endforeach ?>
+		<?php else: ?>
+			<tr><td colspan="14">暂无数据</td></tr>
+		<?php endif ?>
+	</table>
+</div>
+
+<iframe id='errDetailFrame' src='/hostapp.php?method=ems_error_detail' frameborder="0" scrolling="auto" style="width:100%;"></iframe>
+
+</body>
+</html>

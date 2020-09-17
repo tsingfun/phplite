@@ -1,0 +1,323 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Wind 交易监控系统1.0</title>
+	<link href="favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<link type="text/css" rel="stylesheet" href="/statics/css/top.css" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/left.css"/>
+
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/statics/js/layer.js"></script>
+	<script language="javascript">
+	// 播放提示音
+	function playSound()
+    {
+      var borswer = window.navigator.userAgent.toLowerCase();
+      if ( borswer.indexOf( "ie" ) >= 0 || (window.ActiveXObject || "ActiveXObject" in window))
+      {
+        //IE内核浏览器
+        if ( $( "body" ).find( "embed" ).length > 0 )
+        	$( "body" ).find( "embed" ).remove();
+        $( "body" ).append( '<embed name="embedPlay" src="/statics/audio/notify.wav" autostart="true" hidden="true" loop="false"></embed>' );
+        var embed = document.embedPlay;
+
+        //浏览器不支持 audion，则使用 embed 播放
+        embed.volume = 100;
+        //embed.play();这个不需要
+      } else
+      {
+        //非IE内核浏览器
+        var strAudio = "<audio id='audioPlay' src='/statics/audio/notify.wav' hidden='true'>";
+        if ( $( "body" ).find( "audio" ).length <= 0 )
+          $( "body" ).append( strAudio );
+        var audio = document.getElementById( "audioPlay" );
+
+        //浏览器支持 audion
+        audio.play();
+      }
+    }
+	
+	var bMonitorPage = false;// 当前页面是否是Monitor
+	var bReq = false;
+	function Refresh() {
+		if (bReq)
+    		return;
+		
+		$.ajax({
+		    url:'/monitor.php?method=ewnum',
+		    type:'GET',
+		    async:true,    //或false,是否异步
+		    timeout:10000,    //超时时间
+		    dataType:'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+		    beforeSend:function(xhr){
+		    	bReq = true;
+		    },
+		    success:function(data, textStatus, jqXHR){			    	
+		    	var errnum = parseInt(data['ErrNum']);
+		    	var warnnum = parseInt(data['WarnNum']);
+		    	if (errnum > 0 || warnnum > 0) {
+		    		// -------报警-------
+		    		$('#ewDesc').css('display', 'block');
+		    		$('#ewDesc').children('a').html('错误（' + errnum + '），警告（' + warnnum + '）');
+		    		//播放声音
+		    		playSound();
+		    	} else {
+		    		$('#ewDesc').css('display', 'none');
+		    	}
+		    	
+		    },
+		    error:function(xhr, textStatus) {
+		    	console.log('error');
+		        console.log(xhr);
+		        console.log(textStatus);
+		    },
+		    complete:function(){
+		    	bReq = false;
+		    }
+		})
+	}
+	
+	$().ready(function(){
+		// toggle菜单收起
+		var i=0;
+		$("#arrowTd").click(function() {
+			if(i==0){
+				$("#menuTD").hide();
+	            $('#arrowImg').attr('src','/statics/images/arrow_right.gif');
+				i=1;
+			}else  {
+				$("#menuTD").show();
+	            $('#arrowImg').attr('src','/statics/images/arrow_left.gif');
+				i=0;
+			}
+		});
+		
+	    frmOnload();
+	
+		$(".menu li a").click(function(){
+			$(".menu li a").removeClass("menu_active");
+			$(this).addClass("menu_active");
+	    });
+	
+		/*tab切换*/
+	    $(".menu_title a").click( function(){
+	        var id = $(this).attr("id");
+	        $("#activTab").val(id);
+	        $(".menu").hide();
+	        $("#"+ id +"Box").show();
+	        $(".menu_title > ul > li").removeClass("menu_title_l").addClass("menu_title_l_down");
+	        $(this).parent().removeClass("menu_title_l_down").addClass("menu_title_l").addClass(id);
+	    });
+		
+		// 修改密码
+		$('#ChangePwd').click(function(){
+			layer.open({
+				type: 2,
+				title: '密码修改',
+				maxmin: true,
+				area: ['500px', '270px'],
+				skin: 'layui-layer-rim', //加上边框
+				content: '/user.php?method=changepwd',
+		  	});
+		});
+		
+		
+		<?php if($isneed_alarm): ?>
+		bMonitorPage = true; //初始化监控页面
+		Refresh();
+		
+		// 定时请求错误警告数量，并报警
+	    setInterval(function(){
+	    	Refresh();
+	    	// 通知监控页面刷新
+	    	if (bMonitorPage) {
+	    		var mf = mainFrame.contentWindow ? mainFrame.contentWindow : mainFrame;
+	    		mf.Refresh();
+	    	}
+	    }, <?php echo intval(get_cookie('RefreshPeroid')) * 1000 ?>); //定时刷新时间
+	    <?php endif?>
+	});
+	
+	//菜单滚动条
+	$(window).resize( function(){
+	    frmOnload();
+	});
+	
+	function frmOnload(){
+	    var winH = $(window).height();
+	    var topH = $("#head").outerHeight() + $("#topmenu").outerHeight();
+	    var custH = $(".alltitle").outerHeight();
+	    var h = winH-topH-$("#menuTitle").outerHeight();
+	    var spos = $("#pos").val();
+	    spos = (!spos) ? 0 : spos;
+	    var actTab = $("#activTab").val();
+	    $(".menu").height(h);
+	    $("#"+actTab+"Box").scrollTop(spos);
+	    $("#arrowTd").height(winH-topH);
+	    $("#mainFrame").height(winH-topH-custH-68);
+	}
+	
+	function changeMainFrameSrc(_src){
+		if(_src != null && _src !="" && _src !="null"){
+			document.getElementById("mainFrame").src = _src;
+			
+			//点击标题栏错误警告联动左侧菜单选中
+			if (_src == '/monitor.php') {
+				bMonitorPage = true;
+				$(".menu li a").removeClass("menu_active");
+				$(".menu .li1001 a").addClass("menu_active");
+			} else {
+				bMonitorPage = false;
+			}
+		}
+	}
+	
+	function changeLocation(str) {
+		$('#CurLocation').html('当前位置：' + str);
+	}
+	</script>
+</head>
+
+<body style="overflow:hidden;">
+<div id="ui_header">
+    <div  class="fn-clear">
+      <div class="fl logo">
+	   <a href=""><img src="/statics/images/logo.png"/></a>
+	  </div>
+	  <div class="logo_text">交易监控系统1.0</div>
+    </div>
+</div>
+
+<!--<div id="topmenu" class="topmenu"></div>-->
+
+<table style="width:100%" border="0" align="center" cellpadding="0" cellspacing="0">
+    <tr>
+      <td id="menuTD" valign="top" >
+        <div id="menuTitle" class="menu_title">
+			<!-- <ul>
+            <li class="menu_title_l"><a href="javascript:void(0);" id="yw">运维</a></li>
+            <li class="menu_title_l_down"><a href="javascript:void(0);" id="yy">运营</a></li>
+            </ul> -->
+            
+            <ul>
+            <?php $i = 0;?>
+            <?php foreach($first_menu as $r): ?>
+            	<li class="<?php echo ($i++==0)?'menu_title_l':'menu_title_l_down'; ?>"><a href="javascript:void(0);" id="<?php echo $r['MenuID']?>"><?php echo $r['MenuName']?></a></li>
+            <?php endforeach ?>
+            </ul>
+        </div>
+
+<?php foreach($first_menu as $r): ?>
+	<div id="<?php echo $r['MenuID']?>Box" class="menu" style="disply:none;">
+		<ul>
+		
+		<?php $second = get_child_menu($r['MenuID'], $data_menulist); ?>
+		<?php if(is_array($second) && !empty($second)): ?>
+			
+			<?php foreach($second as $s): ?>
+				<?php $third = get_child_menu($s['MenuID'], $data_menulist); ?>
+				
+				<?php if(is_array($third) && !empty($third)): ?>
+					<li class="li<?php echo $s['MenuID'] ?>">
+					
+						<?php $url = get_menu_url($s['MenuID']); ?>
+						<?php if(!empty($url)): ?>
+							<a href="javascript:changeMainFrameSrc('<?php echo $url ?>');"><?php echo $s['MenuName'] ?></a>
+						<?php else: ?>
+							<?php echo $s['MenuName'] ?>
+						<?php endif ?>
+						
+						
+    					<ul>
+    						<?php foreach($third as $t): ?>
+    							<li><a href="javascript:changeMainFrameSrc('<?php echo get_menu_url($t['MenuID']);?>');"><?php echo $t['MenuName']?></a></li>
+    						<?php endforeach ?>
+    					</ul> 
+					</li>
+				<?php else: ?>
+					<li class="li<?php echo $s['MenuID'] ?>"><a href="javascript:changeMainFrameSrc('<?php echo get_menu_url($s['MenuID']);?>');" class="menu_active"><?php echo $s['MenuName']?></a></li>
+				<?php endif ?>
+				
+			<?php endforeach ?>
+
+		<?php endif ?>
+		
+		</ul>
+	</div>
+<?php endforeach ?>
+
+
+<!-- 
+<div id="ywBox" class="menu" style="disply:none;">
+    <ul>
+       
+        <li class="monitor"><a href="javascript:changeMainFrameSrc('/monitor.php');" class="menu_active">实时监控</a></li>
+        <li class="paramset">参数设置
+            <ul>
+                <li><a href="javascript:changeMainFrameSrc('paramset.php?AppName=WTS&type=yw');">WTS</a></li>
+                <li><a href="javascript:void(0);">EMS.Manager</a></li>
+                <li><a href="javascript:void(0);">EMS.Engine</a></li>
+				<li><a href="javascript:void(0);">PB.Quotation</a></li>
+            </ul> 
+        </li>
+        <li class="server"><a href="javascript:changeMainFrameSrc('hostapp.php');">主机应用列表</a>
+        	<ul>
+                <li><a href="javascript:changeMainFrameSrc('hostapp.php?method=ems');">EMS</a></li>
+				<li><a href="javascript:changeMainFrameSrc('hostapp.php?method=pb');">PB</a></li>
+            </ul>
+        </li>
+		<li class="settings">系统管理
+            <ul>
+                <li><a href="javascript:changeMainFrameSrc('hostapp.php?method=host');">主机管理</a></li>
+                <li><a href="javascript:changeMainFrameSrc('hostapp.php?method=app');">应用管理</a></li>
+                <li><a href="javascript:changeMainFrameSrc('user.php?method=oplogs');">操作日志</a></li>
+				<li><a href="javascript:changeMainFrameSrc('user.php');">用户权限</a></li>
+				<li><a href="javascript:changeMainFrameSrc('settings.php');">系统设置</a></li>
+            </ul> 
+        </li>
+    </ul>
+</div>
+
+<div id="yyBox" class="menu" style="display:none;">
+	<ul>
+		<li class="wts"><a href="javascript:changeMainFrameSrc('paramset.php?AppName=WTS&type=yy');">WTS运营</a></li>
+	</ul>
+</div>
+ -->
+
+      </td>
+      <td id="arrowTd" valign="middle"><img id="arrowImg" src="/statics/images/arrow_left.gif"/> </td>
+      <td valign="top">
+		<div class="alltitle">
+		    <ul class="titleL"> 
+		        <li id="CurLocation">当前位置：</li>
+		    </ul>
+			<ul class="titleM" id="ewDesc" style="display:none;">
+				<img src="/statics/images/err.gif" style="width:16px;height:16px;"/>
+				<a href="javascript:changeMainFrameSrc('/monitor.php');"></a>
+			</ul>
+			<ul class="titleR">
+				<li><span style="color:#FF5300;" id="title">欢迎您，<?php echo get_cookie('UserId')?></span></li>
+				<li><a href="javascript:void(0);" id="ChangePwd">修改密码</a></li>
+				<li>
+					<a style="cursor:pointer;" onclick="javascript:window.location.href='/login.php?method=logout'" >退出</a>
+				</li>
+			</ul>
+		</div>
+		
+	<?php if($isneed_alarm): ?>
+      <iframe id='mainFrame' src='/monitor.php' frameborder="0" scrolling="auto" style="width:100%;"></iframe>
+    <?php elseif($isyy_role):?>
+      <iframe id='mainFrame' src='/paramset.php?AppName=WtsStock&type=yy' frameborder="0" scrolling="auto" style="width:100%;"></iframe>
+    <?php else:?>
+      <iframe id='mainFrame' src='/nopage.html' frameborder="0" scrolling="auto" style="width:100%;"></iframe>
+    <?php endif?>
+      
+      </td>
+      
+    </tr>
+  </table>
+</body>
+</html>

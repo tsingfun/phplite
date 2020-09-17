@@ -1,0 +1,28 @@
+{
+	"MsgCode":26,
+	"CacheData":[
+		{
+			"InstName":"PBServer",
+			"InstDesc":"PB缓存服务",
+			"InstStatus":"Working",
+			"InstProgress":"100 %",
+			"InstMem":"40.27 M",
+			"WorkingThread":"入库线程正常"
+		},
+		
+		{
+			"InstName":"PB_Quo",
+			"InstDesc":"PB行情服务",
+			"InstStatus":"Working",
+			"InstProgress":"0 %",
+			"InstMem":"100.27 M",
+			"WorkingThread":"入库线程正常"
+		}
+	],
+	
+	"DBWriterStatus":"异常",
+	"NetServerStatus":"正常",
+	"ClearDate":"2017/08/22",
+	"ClearStatus":"正常",
+	"OpeningInfo":"早盘系统正常启动，晚盘系统正常结束"
+}

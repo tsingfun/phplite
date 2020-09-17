@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 消警确认</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<style type="text/css">
+		div.main { padding:20px 30px; }
+		input[type="text"]{width:320px;}
+	</style>
+	<script type="text/javascript">
+		function close_layer(){
+			var index = parent.layer.getFrameIndex(window.name);
+			parent.layer.close(index);
+		}
+		
+		// 获取待交互的主框架
+		function MainFrame(){
+			return parent.mainFrame.contentWindow ? parent.mainFrame.contentWindow : parent.mainFrame;
+		}
+		
+		//提交添加/修改
+		function ok(){
+			var remark = document.getElementById('Remark').value;
+			MainFrame().ewclear_ok('<?php echo $_GET["ip"]?>', '<?php echo $_GET["appname"]?>', '<?php echo $_GET["alarmtype"]?>', '<?php echo $_GET["template"]?>', remark);
+			close_layer();
+		}
+	</script>
+</head>
+
+<body>
+<div class="main">
+	<table class="tb_layout">
+		<tr>
+			<td colspan="2">
+			主机：<b><?php echo $_GET["ip"]?></b>&nbsp;&nbsp;
+			应用：<b><?php echo $_GET["appname"]?></b>&nbsp;&nbsp;
+			类型：<b><?php echo $_GET["alarmname"]?></b>
+		</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top;min-width:70px;">原因备注：</td>
+			<td style="min-width:360px;">
+				<textarea rows="4" cols="55" id="Remark" style="width:350px;max-width:350px;height:80px;max-height:80px;"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td style="height:40px;">
+				<input type="submit" onclick="ok();" value="确定"/>
+				&nbsp;&nbsp;<input type="reset" onclick="MainFrame().ewclear_cancel();close_layer();" value="取消"/>
+			</td>
+		</tr>
+	</table>
+</div>
+</body>
+</html>

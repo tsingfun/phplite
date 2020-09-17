@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 应用管理</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/statics/js/layer.js"></script>
+	<style type="text/css">
+		div.main { padding:20px; }
+	</style>
+	<script type="text/javascript">
+	
+	// 初始化
+	$().ready( function(){
+		parent.changeLocation('运维 > 系统管理 > 应用管理');
+		
+	 	// 表格点击选中行
+	    $('table.selectable tr').click(function () {
+	        var trSeq = $(this).parent().find('tr').index($(this));
+	        if (trSeq > 0){
+	        	$(this).parent().find('tr').removeClass('selected');
+	        	$(this).addClass('selected');
+	        }
+	    })
+	    
+	    //----------------------------------载入配置弹出层-------------------------------
+	    $('#load_btn').click(function(e){
+	    	
+	    	// 阻止隐藏div
+	    	stopPropagation(e);
+	    	
+	    	//获取鼠标位置函数  
+	    	var x = e.pageX || e.originalEvent.x || e.originalEvent.layerX || 0;
+    		var y = e.pageY || e.originalEvent.y || e.originalEvent.layerY || 0;
+	    	$('#load_div').css({ top: y-2 ,left: x+15 });
+	    	
+	        $('#load_div').fadeIn(200);
+	    });
+	 	
+		function stopPropagation(e) {
+			if (e.stopPropagation)
+				e.stopPropagation();
+			else
+				e.cancelBubble = true;
+		}
+		
+		$(document).bind('click',function(){
+			$('#load_div').fadeOut(300);
+		});
+		
+		$('#load_div').bind('click',function(e){
+			stopPropagation(e);
+		});
+	    //----------------------------------------------------------------------------
+	});
+	
+	//组别管理
+	function app_group_manage(oper){
+		parent.layer.open({
+			type: 2,
+			title: oper=='Add'?'新建组别':'删除组别',
+			maxmin: false,
+			area: ['480px', '210px'],
+			content: '/hostapp.php?method=app_group_manage&AppName=<?php echo $CurAppTypeName;?>&oper=' + oper,
+	  	});
+	}
+	
+	//组别管理回调
+	function app_group_apply(oper_type, AppName, AppGroup) {
+		$.ajax({
+		    url:'/hostapp.php?method=app_group_apply&OperType=' + oper_type,
+		    data:{'AppName':AppName, 'AppGroup':AppGroup},
+		    type:'GET',
+		    async:true,    //或false,是否异步
+		    timeout:10000,    //超时时间
+		    dataType:'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+		    success:function(data, textStatus, jqXHR){
+		    	if (data['Result'] == '1'){
+		    		
+		    		//------ 执行成功 --------
+		    		if (oper_type=='Add'){
+		    			
+		    			//todo:div新增组别
+		    		}
+		    		else if (oper_type=='Del'){
+		    			
+		    			//todo:div删除组别
+		    		}
+		    		else {
+		    			parent.layer.msg('不支持的操作类型！', {icon: 2});
+		    			return;
+		    		}
+		    		
+		    		var msg = '';
+		    		switch(oper_type) {
+		    		case 'Add':
+		    			msg = '新建组别成功';
+		    			break;
+		    		case 'Del':
+		    			msg = '删除组别成功';
+		    			break;
+		    		}
+		    		//parent.layer.msg(msg, {	icon: 1 });
+		    		parent.layer.alert(msg, {
+		    			icon: 1, 
+		    			end:function(){
+		    				window.location.reload(); // 刷新页面
+		    			}
+		    		});
+		    		
+		    	} else {
+		    		
+		    		//------ 执行失败 --------
+		    		parent.layer.alert('发生错误：' + data['RspInfo'], {icon: 2});
+		    	}
+		    },
+		    error:function(xhr, textStatus) {
+		    	parent.layer.alert('失败[' + textStatus + ']', {icon: 2});
+		    },
+		    complete:function(){
+		    	
+		    }
+		})
+	}
+	
+	//组别设置
+	function app_group_set(AppGroup) {
+		//检查是否有选中行
+    	var trObj = $('#table_app').find('tr.selected');
+    	if (trObj.length <= 0){
+    		parent.layer.msg('请选择应用进行组别设置！', {icon: 7});
+    		return;
+    	}
+    	
+		var HostIP = trObj.children('td').eq(1).text();
+		var AppName = trObj.children('td').eq(2).text();
+		
+		$.ajax({
+		    url:'/hostapp.php?method=app_group_set',
+		    data:{'HostIP':HostIP, 'AppName':AppName, 'AppGroup':AppGroup},
+		    type:'GET',
+		    async:true,    //或false,是否异步
+		    timeout:10000,    //超时时间
+		    dataType:'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+		    success:function(data, textStatus, jqXHR){
+		    	if (data['Result'] == '1'){
+		    		
+		    		//------ 执行成功 --------
+		    		parent.layer.alert('组别设置成功！', {
+		    			icon: 1, 
+		    			end:function(){
+		    				window.location.reload(); // 刷新页面
+		    			}
+		    		});
+		    		
+		    	} else {
+		    		
+		    		//------ 执行失败 --------
+		    		parent.layer.alert('发生错误：' + data['RspInfo'], {icon: 2});
+		    	}
+		    },
+		    error:function(xhr, textStatus) {
+		    	parent.layer.alert('失败[' + textStatus + ']', {icon: 2});
+		    },
+		    complete:function(){
+		    	
+		    }
+		})
+	}
+	</script>
+</head>
+
+<body>
+<div class="main">
+	<div style="padding:10px 0 30px 0;">
+		<form action="/hostapp.php?method=app" method="post" name="appTypeForm">
+		应用：
+		<select name="AppName" onchange="javascript:document.appTypeForm.submit();">
+          <?php foreach($data_app_typelist['AppTypeList'] as $r): ?>
+			<option value="<?php echo $r ?>" <?php if ($r == $CurAppTypeName) echo 'selected'; ?> ><?php echo $r ?></option>
+		  <?php endforeach ?>
+        </select>
+		</form>
+	</div>
+
+	<table class="table1 selectable" style="width:900px;" id="table_app">
+		<tr>
+			<th width="50px">序号</th>
+			<th width="180px">IP</th>
+			<th width="200px">应用名称</th>
+			<th width="100px">组别</th>
+			<th>版本</th>
+		</tr>
+		<?php if (!empty($data_app) && isset($data_app['AppData'])) : ?>
+		<?php $i = 0; ?>
+		<?php foreach($data_app['AppData'] as $r): ?>
+			<tr>
+				<td><?php echo ++$i; ?></td>
+				<td><?php echo $r['HostIP'] ?></td>
+				<td><?php echo $r['AppName'] ?></td>
+				<td><?php echo $r['AppGroup'] ?></td>
+				<td><?php echo $r['AppVersion'] ?></td>
+			</tr>
+			<?php endforeach ?>
+		<?php else: ?>
+			<tr><td colspan="5">暂无数据</td></tr>
+		<?php endif ?>
+	</table>
+
+<br/>
+<input type="button" value="设置组别..." id="load_btn"/>
+  <div id="load_div">
+   	<ul>
+   		<?php if (!empty($data_appgroup) && isset($data_appgroup['AppGroupList'])) : ?>
+   		<?php foreach($data_appgroup['AppGroupList'] as $r): ?>
+			<li><a href="javascript:app_group_set('<?php echo $r ?>');"><?php echo $r ?></a></li>
+		<?php endforeach ?>
+		<?php endif ?>
+		<li><a href="javascript:app_group_manage('Add');">+ 新建组别</a></li>
+		<li><a href="javascript:app_group_manage('Del');">- 删除组别</a></li>
+   	</ul>
+   </div>
+</div>
+</body>
+</html>

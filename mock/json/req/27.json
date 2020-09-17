@@ -1,0 +1,13 @@
+{"MsgCode":27,"AppName":"WtsStock", 
+					  "AppGroup":"PC",
+					  "HostIP":"",
+					  "WtsStock.ini":{
+							"OEM":{"ID":null,"ERRINFO":null},
+							"MD5":{"ENABLE":null,"ERRINFO":null},
+							"宏汇处理方式":{"账号权限管理":null},
+							"EMS":null,
+							"ETF过滤":null
+					   },
+					  "ModulesMd5.json":null,
+					  "AccountAuthority.json":null
+					 }

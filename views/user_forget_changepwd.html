@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 找回密码</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<style type="text/css">
+		div.main { padding:50px 33%; }
+	</style>
+	<script type="text/javascript">
+		function showErrMsg(msg){
+			var errMsgObj = document.getElementById('errMsg');
+			errMsgObj.innerText = msg;
+			errMsgObj.style.display = 'inline-block';
+		}
+
+		function checkSubmit(){
+			var newpwd = document.cpForm.NewPwd.value;
+			if (newpwd==''){
+				showErrMsg('新密码不能为空！');
+				return false;
+			}
+			
+			var newpwdv = document.cpForm.NewPwdVerify.value;
+			if (newpwdv==''){
+				showErrMsg('确认密码不能为空！');
+				return false;
+			}
+			
+			if (newpwd != newpwdv){
+				showErrMsg('新密码与确认密码不一致！');
+				return false;
+			}
+			
+			return true;
+		}
+	</script>
+</head>
+
+<body>
+<div class="main">
+<form action="/forget.php?method=dochangepwd" method="post" name="cpForm">
+	<input type="hidden" name="UserId" value="<?php echo $UserId;?>"/>
+	<table class="tb_layout">
+		<tr>
+			<td style="min-width:75px;">新密码：</td>
+			<td><input type="password" name="NewPwd" value="" style="width:300px;"/></td>
+		</tr>
+		<tr>
+			<td style="min-width:75px;">密码确认：</td>
+			<td><input type="password" name="NewPwdVerify" value="" style="width:300px;"/></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td style="height:50px;"><input type="submit" onclick="javascript:return checkSubmit();" value="重置密码"/>
+			&nbsp;&nbsp;<input type="reset" value="清空"/>
+			<a id="errMsg" style="color:red;margin-left:10px;display:none;"></a>
+			</td>
+		</tr>
+	</table>
+</form>
+</div>
+</body>
+</html>

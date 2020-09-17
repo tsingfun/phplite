@@ -1,0 +1,1 @@
+{"MsgCode":28,"AppName":"WtsStock","AppGroup":"PC","WriteStamp":"","WtsStock.ini":{"OEM":{"ID":"客户端MD5不匹配,禁止登陆！","ERRINFO":"请使用券商OEM版登陆！"},"MD5":{"ENABLE":"1","ERRINFO":"客户端MD5不匹配,禁止登陆！a"}},"ModulesMd5.json":{"Md5Info":[{"apptype":"WDADR","md5":"aaa","remark":""},{"apptype":"WTT","md5":"%04d-%02d-%02d","remark":"a"}]}}

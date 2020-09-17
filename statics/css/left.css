@@ -1,0 +1,102 @@
+
+.menu_title {
+	padding-bottom:5px;
+	/*width:153px;*/
+	height:29px;
+	font-weight: bold;
+}
+.menu_title li{float:left; width:49%; text-align:center; line-height:30px; display:block; cursor:pointer; color:#999999;}
+
+.menu_title_l_down{ float:left; background-color:#E3E6EB; border:1px solid #A6B5C6;border-top:0px;}
+.menu_title_l_down a{color:#999999;padding:6px 35px;}
+.menu_title_l_down a:hover{color:#333333;}
+.menu_title_l{}
+
+/* main menu */
+.menu {overflow-y:auto; overflow-x:hidden; margin-top:18px;font-family:Times,\5b8b\4f53;}
+.menu ul{line-height:24px;}
+.menu ul li {
+    color:#282828;
+	text-align:left;
+	padding:5px 0 5px 50px;
+}
+.menu ul li a:link,
+.menu ul li a:visited {
+	 color:#282828;
+}
+.menu ul li a:hover,
+.menu ul li a:active  {
+	color: #FF5300;
+}
+.menu ul li a.current:link,
+.menu ul li a.current:visited,
+.menu ul li a.current:hover,
+.menu ul li a.current:active  {
+	color: #FF5300;
+}
+/*图标*/
+.menu ul li.monitor,.menu ul li.li1001{background: url(../images/menu_icons/monitor.png) no-repeat 22px 8px; background-size:16px 16px;}
+.menu ul li.paramset,.menu ul li.li1010{background: url(../images/menu_icons/paramset.png) no-repeat 22px 8px; background-size:16px 16px;}
+.menu ul li.server,.menu ul li.li1020{background: url(../images/menu_icons/server.png) no-repeat 22px 8px; background-size:16px 16px;}
+.menu ul li.settings,.menu ul li.li1030{background: url(../images/menu_icons/settings.png) no-repeat 22px 8px; background-size:16px 16px;}
+.menu ul li.wts,.menu ul li.li2001{background: url(../images/menu_icons/wts.png) no-repeat 22px 8px; background-size:16px 16px;}
+
+/* sub menu */
+.menu ul li ul {
+    margin-left: -60px;
+	border-width:0;
+}
+.menu ul li ul li {
+	list-style: none;
+	padding: 3px 0 3px 62px;
+}
+.menu ul li ul li a {
+	font-weight: normal;
+}
+.menu ul li ul li a:link,
+.menu ul li ul li a:visited  {
+	color: #666666;
+}
+.menu ul li ul li a:hover,
+.menu ul li ul li a:active  {
+	color: #FF5300;
+}
+.menu  ul li a.menu_active,
+.menu ul li ul li a.menu_active {
+	color: #FF5300;
+}
+
+.titleR a:hover,
+.menu ul li ul li a.current:link,
+.menu ul li ul li a.current:visited,
+.menu ul li ul li a.current:hover,
+.menu ul li ul li a.current:active  {
+	color: #FF5300;
+}
+
+
+.menu .treeview .hover { color: #FF5300; cursor: pointer; }
+.menu .treeview li { }
+.menu .treeview .collapsable { }
+.menu .treeview .expandable { }
+.menu .treeview .last { }
+.menu .treeview .lastCollapsable { }
+.menu .treeview .lastExpandable { }
+        
+
+#arrowTd {  width:6px;
+            cursor:pointer;
+            background-color:#E3E8EE;
+            padding-left:2px;
+}
+#menuTD {width: 200px; min-width: 200px;}
+.alltitle{min-width:790px;overflow:hidden;}
+.titleL{float:left;margin-left:5px;display:inline;width:300px;}
+.titleL li,.titleR li{float:left;margin-right:10px;}
+.titleR{float:right;margin-right:20px;display:inline;}
+.titleR select{margin-top:0;*margin-top:-2px;}
+
+.titleM{float:left; margin-left:50px; text-align:left;}
+.titleM img{position:absolute;}
+.titleM a{color:#FF3737; font-weight:bold; text-decoration:underline; margin-left:24px;}
+/*.titleR a{color:#169BD5}*/

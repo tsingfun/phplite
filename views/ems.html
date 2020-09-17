@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ EMS监控</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<!-- <meta http-equiv="refresh" content="<?php echo get_cookie('RefreshPeroid') ?>" /> -->
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/statics/js/layer.js"></script>
+	<style type="text/css">
+		div.manager { height:30%; padding:20px; }
+		div.engine { padding:20px; }
+	</style>
+<script language="javascript">
+$(document).ready( function(){
+	parent.changeLocation('运维 > 主机应用列表 > EMS');
+	
+	// 定时刷新
+	var bRefresh = true;
+    setInterval(function(){
+    	if (!bRefresh)
+    		return;
+    	window.location.href=window.location.href;
+    }, <?php echo intval(get_cookie('RefreshPeroid')) * 1000 ?>); //定时刷新时间
+    
+	//算法单列表弹窗
+	$('a.detail').click(function(){
+		var EngineID = $(this).parent().parent("tr").children('td').eq(1).html();
+		//var ip = $(this).parent().parent("tr").children('td').eq(2).html();
+		
+		parent.layer.open({
+			type: 2,
+			title: '引擎(ID:' + EngineID + ')算法单列表',
+			maxmin: true,
+			area: ['1000px', '670px'],
+			anim:false,
+			content: '/hostapp.php?method=ems_inst&EngineID=' + EngineID,
+	  	});
+	});
+	
+	//行情信息弹窗
+	$('a.quo').click(function(){
+		var EngineID = $(this).parent().parent("tr").children('td').eq(1).html();
+		
+		parent.layer.open({
+			type: 2,
+			title: '引擎(ID:' + EngineID + ')行情信息',
+			maxmin: true,
+			area: ['1000px', '670px'],
+			anim:false,
+			content: '/hostapp.php?method=ems_quo&EngineID=' + EngineID,
+	  	});
+	});
+	
+	//错误信息弹窗
+	$('a.error').click(function(){
+		var EngineID = $(this).parent().parent("tr").children('td').eq(1).html();
+		
+		parent.layer.open({
+			type: 2,
+			title: '引擎(ID:' + EngineID + ')错误信息',
+			maxmin: true,
+			area: ['1000px', '670px'],
+			anim:false,
+			content: '/hostapp.php?method=ems_error&EngineID=' + EngineID,
+	  	});
+	});
+	
+	//停止/启动Manager
+	$('a.oper_btn').click(function(){
+		// 不刷新
+		bRefresh = false;
+		
+		var status = $(this).html();
+		var ip = $(this).parent().parent("tr").children('td').eq(0).html();
+		var port = $(this).parent().parent("tr").children('td').eq(1).html();
+		
+		var msg;
+		if (status=='正常')
+			msg = '停止后EMS将不再提供算法下单服务，确认停止Manager？';
+		else
+			msg = '确认启动Manager？';
+		
+		//询问框
+		parent.layer.confirm(msg + '<br/>IP：' + ip + '<br/>端口：' + port, {
+		  btn: ['确认','取消'], //按钮
+		  title: '确认'
+		}, function(){
+		   	//ok
+		   	$.ajax({
+			    url:'/hostapp.php?method=ems_mgr_stop',
+			    data:{'Type':status=='正常'?2:1},
+			    type:'GET',
+			    async:true,    //或false,是否异步
+			    timeout:10000,    //超时时间
+			    dataType:'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+			    success:function(data, textStatus, jqXHR){
+			    	if (data['Result'].indexOf('算法服务') >= 0){
+			    		
+			    		//------ 执行成功 --------
+			    		parent.layer.alert(data['Result'], {
+			    			icon: 1, 
+			    			end:function(){
+			    				window.location.reload(); // 刷新页面
+			    			}
+			    		});
+			    		
+			    	} else {
+			    		
+			    		//------ 执行失败 --------
+			    		parent.layer.alert('发生错误：' + data['RspInfo'], {icon: 2});
+			    	}
+			    },
+			    error:function(xhr, textStatus) {
+			    	parent.layer.alert('失败[' + textStatus + ']', {icon: 2});
+			    },
+			    complete:function(){
+			    	// 恢复刷新
+					bRefresh = true;
+			    }
+			})
+			
+		}, function(){
+		  	//cancel
+		  	
+			// 恢复刷新
+			bRefresh = true;
+		});
+	});
+	
+});
+</script>
+</head>
+
+<body>
+
+<div class="manager">
+	<div class="table_title"><i>&nbsp;</i>MANAGER状态</div>
+	<table class="table1">
+		<tr>
+			<th>IP</th>
+			<th>端口</th>
+			<th>服务状态</th>
+			<th>CPU (%)</th>
+			<th>Mem (%)</th>
+			<th>总账户数</th>
+			<th>总算法单数</th>
+			<th>算法总进度</th>
+			<th>版本</th>
+		</tr>
+		<?php if (isset($data_manager) && !empty($data_manager)) : ?>
+		<tr>
+
+			<td><?php echo $data_manager['IP'] ?></td>
+			<td><?php echo $data_manager['Port'] ?></td>
+			<td><a class="oper_btn" href="javascript:void(0);"><?php echo $data_manager['Status'] ?></a></td>
+			<td><?php echo number_format($data_manager['CpuUsage'], 2) ?></td>
+			<td><?php echo $data_manager['MemUsage'] ?></td>
+			<td><?php echo $data_manager['AccountNum'] ?></td>
+			<td><?php echo $data_manager['InsCount'] ?></td>
+			<td><?php echo number_format($data_manager['InsProgress'], 2) ?> %</td>
+			<td><?php echo $data_manager['BuildDate'] ?></td>
+		</tr>
+		<?php endif ?>
+	</table>
+</div>
+
+<div class="engine">
+	<div class="table_title"><i>&nbsp;</i>引擎状态</div>
+	<table class="table1">
+		<tr>
+			<th>序号</th>
+			<th>引擎ID</th>
+			<th>IP</th>
+			<th>端口</th>
+			<th>CPU (%)</th>
+			<th>Mem (%)</th>
+			<th>服务器时间</th>
+			<th>心跳</th>
+			<th>市场状态</th>
+			<th>行情源状态</th>
+			<th>总算法单数</th>
+			<th>执行中</th>
+			<th>排队中</th>
+			<th>版本</th>
+			<th>算法单信息</th>
+			<th>市场行情信息</th>
+			<th>错误信息</th>
+		</tr>
+		<?php if (!empty($data_enginelist) && isset($data_enginelist['Result'])) : ?>
+		<?php $i = 0; ?>
+		<?php foreach($data_enginelist['Result'] as $r): ?>
+			<tr>
+				<td><?php echo ++$i; ?></td>
+				<td><?php echo $r['EngineID'] ?></td>
+				<td><?php echo $r['IP'] ?></td>
+				<td><?php echo $r['Port'] ?></td>
+				<td><?php echo number_format($r['CpuUsage'], 2) ?></td>
+				<td><?php echo $r['MemUsage'] ?></td>
+				<td <?php if(abs(time() - strtotime($r['SysTime'])) > 5) echo 'class="error"';?>><?php echo $r['SysTime'] ?></td>
+				<td <?php if (intval($r['HeartBeat']) > 5) echo 'class="error";'?>><?php echo $r['HeartBeat'] ?> s</td>
+				<td><?php echo get_market_status($r['MarketStatus']) ?></td>
+				
+					<?php if ($r['QuoSrcStatus'] == 0): ?>
+						<td>正常</td>
+					<?php else: ?>
+						<td class="error">异常(<?php echo $r['QuoSrcStatus'] ?>)</td>
+					<?php endif ?>
+				
+				<td><?php echo $r['InsCount'] ?></td>
+				<td><?php echo $r['ActInsCount'] ?></td>
+				<td><?php echo $r['QueInsCount'] ?></td>
+				<td><?php echo $r['BuildDate'] ?></td>
+				<td><a href="javascript:void(0);" class="detail">查看</a></td>
+				<td><a href="javascript:void(0);" class="quo">查看</a></td>
+				<td <?php if (intval($r['AlarmCount']) > 0) echo 'class="error";'?>><a href="javascript:void(0);" class="error">查看(<?php echo $r['AlarmCount'] ?>)</a></td>
+			</tr>
+			<?php endforeach ?>
+		<?php else: ?>
+			<tr><td colspan="17">暂无数据</td></tr>
+		<?php endif ?>
+	</table>
+</div>
+
+</body>
+</html>

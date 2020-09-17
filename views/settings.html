@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 系统设置</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/statics/js/num.js"></script>
+	<script type="text/javascript" src="/statics/js/layer.js"></script>
+	<style type="text/css">
+		div.main { padding:20px; }
+	</style>
+	<script language="javascript">
+	// 正常/灰掉一个区域
+	function enable_block(ele_class, enabled) {
+		if (!enabled) {
+			$('.' + ele_class).find("input,button,textarea,select").attr('disabled', true);
+			$('.' + ele_class).removeClass("block_disabled").addClass("block_disabled");
+		} else {
+			$('.' + ele_class).find("input,button,textarea,select").removeAttr('disabled');
+			$('.' + ele_class).removeClass("block_disabled");
+		}		
+	}
+	
+	$(function(){
+		parent.changeLocation('运维 > 系统管理 > 系统设置');
+		
+		//勾选“发送错误报警邮件”
+		<?php if(!$data_sett['IsSendEmail']): ?>
+			enable_block('tb_layout', false);
+		<?php endif ?>
+		$('#IsSendEmail').click(function(){
+			enable_block('tb_layout', $(this).is(':checked'));
+		});
+	});
+	
+	function showErrMsg(msg){
+		var errMsgObj = document.getElementById('errMsg');
+		errMsgObj.innerText = msg;
+		errMsgObj.style.display = 'inline-block';
+	}
+	
+	function empty_check(obj, msg) {
+		var objval = obj.value;
+		if (objval==''){
+			showErrMsg(msg + '不能为空！');
+			obj.focus();
+			return false;
+		}
+		
+		return true;
+	}
+	
+	function ok() {
+
+		if (!empty_check(document.settingForm.RefreshPeroid, '刷新间隔')) return false;
+		if ($('#IsSendEmail').is(':checked')) {
+			if (!empty_check(document.settingForm.EmailServerID, '邮件服务器地址')) return false;
+			if (!empty_check(document.settingForm.EmailServerPort, '邮件服务器端口')) return false;
+			if (!empty_check(document.settingForm.SendFrom, '发件人')) return false;
+			if (!empty_check(document.settingForm.AddrList1, '一级邮件列表')) return false;
+			if (!empty_check(document.settingForm.Upgrade2, '转至二级邮件列表时间')) return false;
+			if (!empty_check(document.settingForm.AddrList2, '二级邮件列表')) return false;
+			if (!empty_check(document.settingForm.Upgrade3, '转至三级邮件列表时间')) return false;
+			if (!empty_check(document.settingForm.AddrList3, '三级邮件列表')) return false;
+		}
+		
+		//ok
+	   	$.ajax({
+		    url:'/settings.php?method=save',
+		    //data:$('#settingForm').serialize(), //disable状态下的输入框值不会提交
+		    data:{'RefreshPeroid':document.settingForm.RefreshPeroid.value, 'IsSendEmail':document.settingForm.IsSendEmail.checked?1:0,
+		    	'EmailServerID':document.settingForm.EmailServerID.value,'EmailServerPort':document.settingForm.EmailServerPort.value,
+		    	'SendFrom':document.settingForm.SendFrom.value, 'AddrList1':document.settingForm.AddrList1.value,
+		    	'Upgrade2':document.settingForm.Upgrade2.value, 'AddrList2':document.settingForm.AddrList2.value,
+		    	'Upgrade3':document.settingForm.Upgrade3.value, 'AddrList3':document.settingForm.AddrList3.value},
+		    type:'POST',
+		    async:true,    //或false,是否异步
+		    timeout:10000,    //超时时间
+		    dataType:'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+		    success:function(data, textStatus, jqXHR){
+		    	if (data['Result'] == '1'){
+		    		
+		    		//------ 执行成功 --------
+		    		parent.layer.alert('系统设置保存成功！', {
+		    			icon: 1, 
+		    			end:function(){
+		    				window.location.reload(); // 刷新页面
+		    			}
+		    		});
+		    		
+		    	} else {
+		    		
+		    		//------ 执行失败 --------
+		    		parent.layer.alert('发生错误：' + data['RspInfo'], {icon: 2});
+		    	}
+		    },
+		    error:function(xhr, textStatus) {
+		    	parent.layer.alert('失败[' + textStatus + ']', {icon: 2});
+		    },
+		    complete:function(){
+		    	
+		    }
+		})
+		
+		return false;
+	}
+	
+	function test_send_email() {
+
+		if (!empty_check(document.settingForm.EmailServerID, '邮件服务器地址')) return ;
+		if (!empty_check(document.settingForm.EmailServerPort, '邮件服务器端口')) return ;
+		if (!empty_check(document.settingForm.SendFrom, '发件人')) return ;
+		if (!empty_check(document.settingForm.AddrList1, '一级邮件列表')) return ;
+		
+		$("#test_send").attr("disabled", true);
+		$('#contentBoxHidden').fadeIn(100);
+
+		//ok
+	   	$.ajax({
+		    url:'/settings.php?method=send_test_email',
+		    data:{'SMTPServer':document.settingForm.EmailServerID.value, 'SMTPPort':document.settingForm.EmailServerPort.value,
+		    	'Sender':document.settingForm.SendFrom.value, 'Reciever':document.settingForm.AddrList1.value,
+		    	'Tittle':'Wind交易监控系统测试邮件', 'Content':'Wind交易监控系统：如果您能看到此邮件，说明系统邮件设置正常！'},
+		    type:'POST',
+		    async:true,    //或false,是否异步
+		    timeout:10000,    //超时时间
+		    dataType:'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+		    success:function(data, textStatus, jqXHR){
+		    	if (data['Result'] == '1'){
+		    		
+		    		//------ 执行成功 --------
+		    		parent.layer.alert('测试邮件发送成功！', {icon: 1});
+		    		
+		    	} else {
+		    		
+		    		//------ 执行失败 --------
+		    		parent.layer.alert('发生错误：' + data['RspInfo'], {icon: 2});
+		    	}
+		    },
+		    error:function(xhr, textStatus) {
+		    	parent.layer.alert('失败[' + textStatus + ']', {icon: 2});
+		    },
+		    complete:function(){
+		    	$('#test_send').removeAttr('disabled');
+		    	$('#contentBoxHidden').fadeOut(100);
+		    }
+		})
+	}
+	</script>
+</head>
+
+<body>
+<form name="settingForm" id="settingForm">
+<div class="main">
+	<div class="table_title"><i>&nbsp;</i>基本设置</div>
+	刷新间隔：&nbsp;<input type="text" value="<?php echo $data_sett['RefreshPeroid']; ?>" class="num" name="RefreshPeroid"/>&nbsp;秒
+	<a style="color:red;margin-left:5px;">（重新登录才能生效）</a>
+	<br/>
+	<br/>
+	<br/>
+	<div class="table_title"><i>&nbsp;</i>邮件设置</div>
+	<label><input type="checkbox" name="IsSendEmail" id="IsSendEmail" value="1" <?php if($data_sett['IsSendEmail']) echo 'checked'; ?>/>发送错误报警邮件</label>
+	<table class="tb_layout">
+		<tr>
+			<td style="width:100px;">邮件服务器：</td>
+			<td style="width:450px;">
+				<input type="text" value="<?php echo $data_sett['EmailServerID']; ?>" style="width:300px;" name="EmailServerID"/>
+				<div style="display:inline;float:right;margin-right:15px;">
+					端口：<input type="text" value="<?php echo $data_sett['EmailServerPort']; ?>" style="width:60px;" class="num" name="EmailServerPort"/>
+				</div>
+			</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td>发件人：</td>
+			<td><input type="text" value="<?php echo $data_sett['SendFrom']; ?>" style="width:430px;" name="SendFrom"/></td>
+			<td><input type="button" value="测试发送" id="test_send" onclick="javascript:test_send_email();"/>
+				<div id="contentBoxHidden" style="position:absolute; background-color:#fff; border:1px solid #666; padding:10px; display: none;">
+				    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+					  	<tr>
+							<td align="center" height="25"><img src="/statics/images/loading.gif" border="0" /></td>
+						</tr>
+						<tr>
+							<td align="center" height="25" style="color:#FF0000;">正在发送测试邮件，请稍候...</td>
+						</tr>
+					  </table>
+			  	</div>
+			</td>
+		</tr>
+		<tr>
+			<td>一级邮件列表：</td>
+			<td><input type="text" value="<?php echo $data_sett['AddrList1']; ?>" style="width:430px;" name="AddrList1"/></td>
+			<td>(多人以';'分隔)</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><input type="text" value="<?php echo $data_sett['Upgrade2']; ?>" style="width:60px;" class="num" name="Upgrade2"/>&nbsp;小时不处理，转至二级邮件列表</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>二级邮件列表：</td>
+			<td><input type="text" value="<?php echo $data_sett['AddrList2']; ?>" style="width:430px;" name="AddrList2"/></td>
+			<td>(多人以';'分隔)</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><input type="text" value="<?php echo $data_sett['Upgrade3']; ?>" style="width:60px;" class="num" name="Upgrade3"/>&nbsp;小时不处理，转至三级邮件列表</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>三级邮件列表：</td>
+			<td><input type="text" value="<?php echo $data_sett['AddrList3']; ?>" style="width:430px;" name="AddrList3"/></td>
+			<td>(多人以';'分隔)</td>
+		</tr>
+	</table>
+	
+	<br/><br/>
+	<input type="submit" onclick="javascript:return ok();" value="提交"/>
+	<a id="errMsg" style="color:red;margin-left:10px;display:none;"></a>
+</div>
+</form>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+	"MsgCode":5,
+	"HostData":[
+		{
+			"HostIP":"10.102.16.103",
+			"HostName":"PB1",
+			"HostRemark":"ÒÑ×¢²á"
+		},
+		
+		{
+			"HostIP":"10.102.16.104",
+			"HostName":"PB2",
+			"HostRemark":"Î´×¢²á"
+		}
+	]
+}

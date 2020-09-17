@@ -1,0 +1,33 @@
+{
+	"MsgCode":9,
+	"AppData":[
+		{
+			"HostIP":"127.0.0.1",
+			"AppName":"WTS1",
+			"AppGroup":"PC",
+			"AppVersion":"2017/8/18 16:01:35"
+		},
+		
+		{
+			"HostIP":"127.0.0.2",
+			"AppName":"WTS2",
+			"AppGroup":"PC",
+			"AppVersion":"2017/8/18 16:01:35"
+		},
+		
+		{
+			"HostIP":"127.0.0.3",
+			"AppName":"WTS3",
+			"AppGroup":"ÒÆ¶¯",
+			"AppVersion":"2017/8/18 16:01:35"
+		},
+		
+		{
+			"HostIP":"127.0.0.4",
+			"AppName":"WTS4",
+			"AppGroup":"ÒÆ¶¯",
+			"AppVersion":"2017/8/18 16:01:35"
+		}
+	]
+}
+

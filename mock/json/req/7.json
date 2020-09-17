@@ -1,0 +1,2 @@
+{"OperType":"Add","HostIP":"127.0.0.1","HostName":"自己的机器","HostRemark":"自己手动添加的测试机器","ClientIP":"127.0.0.1","MsgCode":7}
+{"OperType":"Del","HostIP":"127.0.0.1","HostName":"自己的机器","HostRemark":"自己手动添加的测试机器","ClientIP":"127.0.0.1","MsgCode":7}

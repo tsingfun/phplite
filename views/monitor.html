@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 实时监控</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<!-- <meta http-equiv="refresh" content="<?php echo get_cookie('RefreshPeroid') ?>" /> -->
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/statics/js/layer.js"></script>
+	<style type="text/css">
+		div.error{ min-height:46%; padding:20px; }
+		div.info { padding:20px; }
+	</style>
+<script language="javascript">
+var bRefresh = true;
+function Refresh() {
+	if (!bRefresh)
+		return;
+	window.location.href=window.location.href;
+}
+
+$(document).ready( function(){
+	parent.changeLocation('运维 > 实时监控');
+    
+	//错误、警告详情弹窗
+	$('a.detail').click(function(){
+		var isError = $(this).parent().parent("tr").children('td').eq(1).html().indexOf('err') >= 0 ? 1 : 0;
+		var ip = $(this).parent().parent("tr").children('td').eq(2).html();
+		var appname = $(this).parent().parent("tr").children('td').eq(3).html();
+		var alarmname = $(this).parent().parent("tr").children('td').eq(4).children('span').eq(0).html();
+		var alarmtype = $(this).parent().parent("tr").children('td').eq(4).children('span').eq(1).html();
+		var template = $(this).parent().parent("tr").children('td').eq(4).children('span').eq(2).html();
+		
+		parent.layer.open({
+			type: 2,
+			title: '错误、警告详情（' + ip + ',' + appname + ',' + alarmname + '）',
+			maxmin: true,
+			area: ['1000px', '670px'],
+			anim:false,
+			content: '/monitor.php?method=ewdetail&IP=' + ip + '&AppName=' + appname + '&AlarmType=' + alarmtype + '&Template=' + template + '&AlarmName=' + alarmname + '&IsError=' + isError,
+	  	});
+	});
+	
+	//消警确认框
+	$('a.ewclear').click(function(){
+		// 不刷新
+		bRefresh = false;
+		
+		var ip = $(this).parent().parent("tr").children('td').eq(2).html();
+		var appname = $(this).parent().parent("tr").children('td').eq(3).html();
+		var alarmname = $(this).parent().parent("tr").children('td').eq(4).children('span').eq(0).html();
+		var alarmtype = $(this).parent().parent("tr").children('td').eq(4).children('span').eq(1).html();
+		var template = $(this).parent().parent("tr").children('td').eq(4).children('span').eq(2).html();
+		
+		// 弹出确认框
+		parent.layer.open({
+			type: 2,
+			title: '确认' + $(this).text() + '？',
+			maxmin: false,
+			area: ['510px', '260px'],
+			anim:false,
+			content: '/monitor.php?method=ewcomfirm&ip=' + ip + '&appname=' + appname + '&alarmtype=' + alarmtype + '&template=' + template + '&alarmname=' + alarmname,
+			end: function () {
+				// 恢复刷新
+				bRefresh = true;
+            }
+	  	});
+		
+	});
+
+});
+
+function ewclear_cancel() {
+	// 恢复刷新
+	bRefresh = true;
+}
+function ewclear_ok(ip, appname, alarmtype, template, remark) {
+	$.ajax({
+	    url:'/monitor.php?method=ewclear',
+	    data:{'IP':ip, 'AppName':appname, 'AlarmType':alarmtype, 'Template':template, 'Remark':remark},
+	    type:'GET',
+	    async:true,    //或false,是否异步
+	    timeout:10000,    //超时时间
+	    dataType:'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+	    success:function(data, textStatus, jqXHR){
+	    	if (data['Result'] == '1'){
+	    		
+	    		//------ 执行成功 --------
+	    		parent.layer.alert('消除成功！', {
+	    			icon: 1, 
+	    			end:function(){
+	    				parent.parent.Refresh(); //刷新父页面错误警告数量
+	    				Refresh(); // 刷新页面
+	    			}
+	    		});
+	    		
+	    	} else {
+	    		
+	    		//------ 执行失败 --------
+	    		parent.layer.alert('发生错误：' + data['RspInfo'], {icon: 2});
+	    	}
+	    },
+	    error:function(xhr, textStatus) {
+	    	parent.layer.alert('失败[' + textStatus + ']', {icon: 2});
+	    },
+	    complete:function(){
+	    	// 恢复刷新
+			bRefresh = true;
+	    }
+	})
+}
+</script>
+</head>
+
+<body>
+
+<div class="error">
+	<div class="table_title"><i>&nbsp;</i>错误、警告</div>
+	<table class="table1" style="min-width:1000px;">
+		<tr>
+			<th>序号</th>
+			<th>级别</th>
+			<th>主机</th>
+			<th>应用</th>
+			<th>类型</th>
+			<th>当日发生次数</th>
+			<th>最后一次的详情</th>
+			<th>最后一次发生的时间</th>
+			<th>最后一次消除的时间</th>
+			<th>是否有错误</th>
+			<th>是否已经送到Eagle</th>
+			<th>是否已发送报警邮件</th>
+			<th>操作</th>
+		</tr>
+		<?php if (!empty($data_ew) && isset($data_ew['ErrData'])) : ?>
+			<?php $i = 0; ?>
+			<?php foreach($data_ew['ErrData'] as $r): ?>
+			<tr>
+				<td><?php echo ++$i; ?></td>
+				<td><img src="/statics/images/<?php echo $r['IsError']?'err':'warn' ?>.png"/></td>
+				<td><?php echo $r['IP'] ?></td>
+				<td class="left"><?php echo $r['AppName'] ?></td>
+				<td><span><?php echo $r['AlarmName'] ?></span>
+					<span style="display:none;"><?php echo $r['AlarmType'] ?></span>
+					<span style="display:none;"><?php echo $r['Template'] ?></span>
+				</td>
+				<td><?php echo $r['ErrNum'] ?></td>
+				<td class="left"><?php echo $r['LastDesc'] ?></td>
+				<td><?php echo $r['LastTime'] ?></td>
+				<td><?php echo $r['LastResolveTime'] ?></td>
+				<td><?php echo $r['HasError']?'是':'否' ?></td>
+				<td><?php echo $r['HasSend2Eagle']?'是':'否' ?></td>
+				<td><?php echo $r['HasSendEmail']?'是':'否' ?></td>
+				<td><a href="javascript:void(0);" class="detail">查看详情</a>&nbsp;
+					<a href="javascript:void(0);" class="ewclear">消除<?php echo $r['IsError']?'错误':'警告' ?></a></td>
+			</tr>
+			<?php endforeach ?>
+		<?php else: ?>
+			<tr><td colspan="13">暂无数据</td></tr>
+		<?php endif ?>
+	</table>
+</div>
+
+<hr/>
+
+<div class="info">
+	<div class="table_title"><i>&nbsp;</i>通知</div>
+	<table class="table1">
+		<tr>
+			<th>序号</th>
+			<th>级别</th>
+			<th>主机</th>
+			<th>应用</th>
+			<th>时间</th>
+			<th class="left" style="min-width:400px;">信息</th>
+		</tr>
+		<?php if (!empty($data_notice) && isset($data_notice['NoticeData'])) : ?>
+		<?php $i = 0; ?>
+		<?php foreach($data_notice['NoticeData'] as $r): ?>
+			<tr>
+				<td><?php echo ++$i; ?></td>
+				<td><img src="/statics/images/info.png"/></td>
+				<td><?php echo $r['IP'] ?></td>
+				<td><?php echo $r['AppName'] ?></td>
+				<td><?php echo $r['NoticeTime'] ?></td>
+				<td class="left"><?php echo $r['NoticeInfo'] ?></td>
+			</tr>
+			<?php endforeach ?>
+		<?php else: ?>
+			<tr><td colspan="6">暂无数据</td></tr>
+		<?php endif ?>
+	</table>
+</div>
+
+</body>
+</html>

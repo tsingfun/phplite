@@ -1,0 +1,58 @@
+{
+	"MsgCode":15,
+	"LogData":[
+		{
+			"LogTypeName":"登录",
+			"HostIP":"127.0.0.1",
+			"UserID":"test001",
+			"UserRoleName":"运维",
+			"LogTime":"2017/8/18 16:01:35",
+			"LogDesc":"登录成功。"
+		},
+		
+		{
+			"LogTypeName":"消警",
+			"HostIP":"127.0.0.1",
+			"UserID":"test001",
+			"UserRoleName":"运维",
+			"LogTime":"2017/8/18 16:01:35",
+			"LogDesc":"消警成功。"
+		},
+		
+		{
+			"LogTypeName":"参数设置",
+			"HostIP":"127.0.0.1",
+			"UserID":"test001",
+			"UserRoleName":"运维",
+			"LogTime":"2017/8/18 16:01:35",
+			"LogDesc":"WTS（PC组）参数设置成功。"
+		},
+		
+		{
+			"LogTypeName":"运维设置",
+			"HostIP":"127.0.0.1",
+			"UserID":"test001",
+			"UserRoleName":"运维",
+			"LogTime":"2017/8/18 16:01:35",
+			"LogDesc":"添加主机 192.168.100.12 成功。"
+		},
+		
+		{
+			"LogTypeName":"用户权限管理",
+			"HostIP":"127.0.0.1",
+			"UserID":"test001",
+			"UserRoleName":"运维",
+			"LogTime":"2017/8/18 16:01:35",
+			"LogDesc":"添加用户test成功。"
+		},
+		
+		{
+			"LogTypeName":"系统设置",
+			"HostIP":"127.0.0.1",
+			"UserID":"test001",
+			"UserRoleName":"运维",
+			"LogTime":"2017/8/18 16:01:35",
+			"LogDesc":"系统设置成功。"
+		}
+	]
+}

@@ -1,0 +1,16 @@
+{
+	"MsgCode":18,
+	"RoleData":[
+		{
+			"RoleID":1,
+			"RoleName":"ткн╛",
+			"RoleRemark":""
+		},
+		
+		{
+			"RoleID":2,
+			"RoleName":"ткс╙",
+			"RoleRemark":""
+		}
+	]
+}

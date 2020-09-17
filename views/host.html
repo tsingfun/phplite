@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 主机管理</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/statics/js/layer.js"></script>
+	<style type="text/css">
+		div.main { padding:20px; }
+	</style>
+	<script type="text/javascript">
+	// 初始化
+	$().ready( function(){
+		parent.changeLocation('运维 > 系统管理 > 主机管理');
+		
+		// 表格点击选中行
+	    $('table.selectable tr').click(function () {
+	        var trSeq = $(this).parent().find('tr').index($(this));
+	        if (trSeq > 0){
+	        	$(this).parent().find('tr').removeClass('selected');
+	        	$(this).addClass('selected');
+	        }
+	    })
+	    
+	});
+	
+	function host_oper_apply(oper_type, hostip, hostname, hostremark) {
+		$.ajax({
+		    url:'/hostapp.php?method=hostoperapply&OperType=' + oper_type,
+		    data:{'HostIP':hostip, 'HostName':hostname, 'HostRemark':hostremark},
+		    type:'GET',
+		    async:true,    //或false,是否异步
+		    timeout:10000,    //超时时间
+		    dataType:'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+		    success:function(data, textStatus, jqXHR){
+		    	if (data['Result'] == '1'){
+		    		
+		    		//------ 执行成功 --------
+		    		var msg = '';
+		    		switch(oper_type) {
+		    		case 'Add':
+		    			msg = '主机添加成功';
+		    			break;
+		    		case 'Mod':
+		    			msg = '主机修改成功';
+		    			break;
+		    		case 'Del':
+		    			msg = '主机删除成功';
+		    			break;
+		    		}
+		    		parent.layer.alert(msg, {
+		    			icon: 1, 
+		    			end:function(){
+		    				window.location.reload(); // 刷新页面
+		    			}
+		    		});
+		    		
+		    	} else {
+		    		
+		    		//------ 执行失败 --------
+		    		parent.layer.alert('发生错误：' + data['RspInfo'], {icon: 2});
+		    	}
+		    },
+		    error:function(xhr, textStatus) {
+		    	parent.layer.alert('失败[' + textStatus + ']', {icon: 2});
+		    },
+		    complete:function(){
+		    	
+		    }
+		})
+	}
+	
+
+	function host_add(){
+		parent.layer.open({
+			type: 2,
+			title: '主机添加',
+			maxmin: false,
+			area: ['510px', '260px'],
+			content: '/hostapp.php?method=hostoper&oper=Add',
+	  	});
+	}
+	function host_mod(){
+		//检查是否有选中行
+		var trObj = $('#table_host').find('tr.selected');
+		if (trObj.length <= 0){
+			parent.layer.msg('请选中一行进行修改！', {icon: 7});
+			return;
+		}
+		parent.layer.open({
+			type: 2,
+			title: '主机修改',
+			maxmin: false,
+			area: ['510px', '260px'],
+			content: '/hostapp.php?method=hostoper&oper=Mod',
+	  	});
+	}
+	function host_del(){
+		var trObj = $('#table_host').find('tr.selected');
+		if (trObj.length <= 0){
+			parent.layer.msg('请选中一行进行删除！', {icon: 7});
+			return;
+		}
+		
+		var hostip = trObj.children('td').eq(1).text();
+		var hostname = trObj.children('td').eq(2).text();
+		var hostremark = trObj.children('td').eq(3).text();
+		//询问框
+		parent.layer.confirm('主机IP：' + hostip
+				+ '<br/>主机名称：' + hostname
+				+ '<br/>备注：' + hostremark,
+		{
+		  btn: ['确认','取消'], //按钮
+		  title: '主机删除确认'
+		}, function(){
+			
+			//提交删除
+			host_oper_apply('Del', hostip, hostname, hostremark);
+			
+		}, function(){	
+		  	//cancel
+		});
+	}
+	
+	</script>
+</head>
+
+<body>
+<div class="main">
+<div>
+	<table class="table1 selectable" style="width:900px;" id="table_host">
+		<tr>
+			<th width="50px">序号</th>
+			<th width="180px">IP</th>
+			<th width="200px">主机名称</th>
+			<th>备注</th>
+		</tr>
+		<?php if (!empty($data_host) && isset($data_host['HostData'])) : ?>
+		<?php $i = 0; ?>
+		<?php foreach($data_host['HostData'] as $r): ?>
+			<tr>
+				<td><?php echo ++$i; ?></td>
+				<td><?php echo $r['HostIP'] ?></td>
+				<td><?php echo $r['HostName'] ?></td>
+				<td class="left"><?php echo $r['HostRemark'] ?></td>
+			</tr>
+			<?php endforeach ?>
+		<?php else: ?>
+			<tr><td colspan="4">暂无数据</td></tr>
+		<?php endif ?>
+	</table>
+</div>
+<div class="oper_icons">
+	<a href="javascript:host_add();" class="add">添加</a>
+	<a href="javascript:host_mod();" class="mod">修改</a>
+	<a href="javascript:host_del();" class="del">删除</a>
+</div>
+</div>
+</body>
+</html>

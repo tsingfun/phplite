@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ PB监控</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<style type="text/css">
+		div.main { padding:20px; }
+	</style>
+	<script type="text/javascript">
+		window.onload = function(){
+			parent.changeLocation('运维 > 主机应用列表 > PB');
+		}
+	</script>
+</head>
+
+<body>
+<div class="main">
+	<div style="padding:10px 0 30px 0;">
+		<form action="/hostapp.php?method=pb" method="post" name="hostIPForm">
+		PB：
+		<select name="HostIP" onchange="javascript:document.hostIPForm.submit();">
+          <?php foreach($data_apptype_hostlist['AppData'] as $r): ?>
+			<option value="<?php echo $r['HostIP'] ?>" <?php if ($r['HostIP'] == $CurHostIP) echo 'selected'; ?> ><?php echo $r['HostIP'] ?></option>
+		  <?php endforeach ?>
+        </select>
+		&nbsp;&nbsp;&nbsp;<a href="javascript:document.hostIPForm.submit();"><img src="/statics/images/refresh.png" alt="刷新" style="margin-top:5px;position: absolute;"/>&nbsp;&nbsp;&nbsp;&nbsp;立即刷新</a>
+		</form>
+	</div>
+
+	<div class="table_title"><i>&nbsp;</i>缓存状态</div>
+	<table class="table1" style="width:800px;">
+		<tr>
+			<th width="80px">实例名</th>
+			<th>实例描述</th>
+			<th width="100px">当前状态</th>
+			<th width="80px">当前进度</th>
+			<th width="80px">当前内存</th>
+			<th width="180px">工作状态</th>
+		</tr>
+		<?php if (!empty($data_pb) && isset($data_pb['CacheData'])) : ?>
+		<?php foreach($data_pb['CacheData'] as $r): ?>
+			<tr>
+				<td class="left"><?php echo $r['InstName'] ?></td>
+				<td class="left"><?php echo $r['InstDesc'] ?></td>
+				<td><?php echo $r['InstStatus'] ?></td>
+				<td><?php echo $r['InstProgress'] ?></td>
+				<td><?php echo $r['InstMem'] ?></td>
+				<td class="left"><?php echo $r['WorkingThread'] ?></td>
+			</tr>
+			<?php endforeach ?>
+		<?php else: ?>
+			<tr><td colspan="6">暂无数据</td></tr>
+		<?php endif ?>
+	</table>
+	<br/>
+	<table class="tb_layout">
+		<tr>
+			<td><img src="/statics/images/<?php echo $data_pb['DBWriterStatus']=='正常'?'info':'err'; ?>.png"/></td>
+			<td>DBWriter服务：<?php echo $data_pb['DBWriterStatus']; ?></td>
+		</tr>
+		<tr>
+			<td><img src="/statics/images/<?php echo $data_pb['NetServerStatus']=='正常'?'info':'err'; ?>.png"/></td>
+			<td>NetServer服务：<?php echo $data_pb['NetServerStatus']; ?></td>
+		</tr>
+		<tr>
+			<td><img src="/statics/images/<?php echo $data_pb['ClearStatus']=='正常'?'info':'err'; ?>.png"/></td>
+			<td>清算服务状态：<?php echo $data_pb['ClearDate']; ?>&nbsp;<?php echo $data_pb['ClearStatus']; ?></td>
+		</tr>
+		<tr>
+			<td><img src="/statics/images/info.png"/></td>
+			<td><?php echo $data_pb['OpeningInfo']; ?></td>
+		</tr>
+	</table>
+</div>
+</body>
+</html>

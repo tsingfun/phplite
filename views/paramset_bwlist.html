@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 黑白名单设置</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<style type="text/css">
+		div.main { padding:20px 30px; }
+		input[type="text"]{width:320px;}
+	</style>
+	<script type="text/javascript">
+		function close_layer(){
+			var index = parent.layer.getFrameIndex(window.name);
+			parent.layer.close(index);
+		}
+		
+		function showErrMsg(msg){
+			var errMsgObj = document.getElementById('errMsg');
+			errMsgObj.innerText = msg;
+			errMsgObj.style.display = 'inline-block';
+		}
+		
+		// 获取待交互的主框架
+		function MainFrame(){
+			return parent.mainFrame.contentWindow ? parent.mainFrame.contentWindow : parent.mainFrame;
+		}
+		
+		//提交添加/修改
+		function ok(){	
+			var account_code = document.getElementById('account_code').value;
+			if (account_code==''){
+				showErrMsg('资金账号不能为空！');
+				return false;
+			}
+			if (account_code.length < 5){
+				showErrMsg('资金账号不能少于5位！');
+				return false;
+			}
+			MainFrame().bwlist_callback('<?php echo $tableid;?>', '<?php echo $oper;?>', account_code);
+			close_layer();
+		}
+		
+		<?php if ($oper=='mod'): ?>
+		//修改时加载初始数据
+		$().ready(function(){
+			var trObj = $('#<?php echo $tableid;?>', MainFrame().document).find('tr.selected');
+			$('#account_code').val(trObj.children('td').eq(0).text());
+		});
+		<?php endif ?>
+	</script>
+</head>
+
+<body>
+<div class="main">
+	<table class="tb_layout">
+		<tr>
+			<td style="width:80px;">资金账号：</td>
+			<td><input type="text" style="width:325px;" id="account_code"/></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td style="height:45px;">
+				<input type="submit" onclick="ok();" value="确定"/>
+				&nbsp;&nbsp;<input type="reset" onclick="close_layer();" value="取消"/>
+				<a id="errMsg" style="color:red;margin-left:10px;display:none;"></a>
+			</td>
+		</tr>
+	</table>
+</div>
+</body>
+</html>

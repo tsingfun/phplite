@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ EMS引擎行情信息</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/statics/js/layer.js"></script>
+	<style type="text/css">
+		div.main{ padding:5px 5px 20px 5px; }
+	</style>
+</head>
+
+<body>
+
+<div class="main">
+	<div style="padding:10px 0;">
+		<form action="/hostapp.php?method=ems_quo" method="post" name="quoForm">
+		<input type="hidden" name="EngineID" value="<?php echo $EngineID;?>"/>
+		&nbsp;市场：
+		<select name="MarketId">
+			<option value="==All==" <?php if ($MarketId=='==All==') echo 'selected'; ?>>==All==</option>
+			<option value="SH" <?php if ($MarketId=='SH') echo 'selected'; ?>>SH</option>
+			<option value="SZ" <?php if ($MarketId=='SZ') echo 'selected'; ?>>SZ</option>
+        </select>
+		&nbsp;&nbsp;&nbsp;代码：
+		<input type="text" style="height:27px;" name="Code" value="<?php echo $Code;?>"/>
+		&nbsp;&nbsp;&nbsp;<input type="button" onclick="javascript:document.quoForm.submit();" value="查询"/>
+		</form>
+	</div>
+	
+	<div class="table_title"><i>&nbsp;</i>行情列表</div>
+	<table class="table1" style="min-width:1000px;">
+		<tr>
+			<th>序号</th>
+			<th>代码</th>
+			<th>名称</th>
+			<th>市场代码</th>
+			<th>交易日</th>
+			<th>时间</th>
+			<th>卖一价</th>
+			<th>最新价</th>
+			<th>买一价</th>
+			<th>涨停价</th>
+			<th>跌停价</th>
+			<th>最高价</th>
+			<th>最低价</th>
+			<th>状态</th>
+			<th>成交量</th>
+			<th>成交金额</th>
+		</tr>
+		<?php if (!empty($data_quolist) && isset($data_quolist['Result'])) : ?>
+			<?php $i = 0; ?>
+			<?php foreach($data_quolist['Result'] as $r): ?>
+			<tr>
+				<td><?php echo ++$i; ?></td>
+				<td><?php echo $r['Code'] ?></td>
+				<td><?php echo $r['Name'] ?></td>
+				<td><?php echo $r['MarketId'] ?></td>
+				<td><?php echo $r['TradingDay'] ?></td>
+				<td><?php echo $r['Time'] ?></td>
+				<td><?php echo $r['AskPrice1'] ?></td>
+				<td><?php echo $r['LastPrice'] ?></td>
+				<td><?php echo $r['BidPrice1'] ?></td>
+				<td><?php echo $r['High'] ?></td>
+				<td><?php echo $r['Low'] ?></td>
+				<td><?php echo $r['HighLimited'] ?></td>
+				<td><?php echo $r['LowLimited'] ?></td>
+				<td><?php echo get_quo_status(chr($r['StatusFlag'])) ?></td>
+				<td><?php echo $r['Volume'] ?></td>
+				<td><?php echo $r['Turnover'] ?></td>
+			</tr>
+			<?php endforeach ?>
+		<?php else: ?>
+			<tr><td colspan="16">暂无数据</td></tr>
+		<?php endif ?>
+	</table>
+	
+	<br/>
+	<hr/>
+	<br/>
+	<table style="width:100%;" id="table_layout">
+		<tr>
+			<td style="width:40%;vertical-align:top;padding-right:20px;">
+			
+				<div class="table_title"><i>&nbsp;</i>市场时间</div>
+				<table class="table1">
+					<tr>
+						<th>序号</th>
+						<th>市场代码</th>
+						<th>动态数据日期</th>
+						<th>代码表日期</th>
+						<th>时间</th>
+					</tr>
+					<?php if (!empty($data_markettimelist) && isset($data_markettimelist['Result'])) : ?>
+					<?php $i = 0; ?>
+					<?php foreach($data_markettimelist['Result'] as $r): ?>
+						<tr>
+							<td><?php echo ++$i; ?></td>
+							<td><?php echo $r['Market'] ?></td>
+							<td><?php echo $r['DynDate'] ?></td>
+							<td><?php echo $r['CodeDate'] ?></td>
+							<td><?php echo $r['Time'] ?></td>
+						</tr>
+						<?php endforeach ?>
+					<?php else: ?>
+						<tr><td colspan="5">暂无数据</td></tr>
+					<?php endif ?>
+				</table>
+				
+			</td>
+			
+			<td style="vertical-align:top;">
+			
+				<div class="table_title"><i>&nbsp;</i>行情源</div>
+				<table class="table1">
+					<tr>
+						<th>序号</th>
+						<th>目标服务器</th>
+						<th>IP</th>
+						<th>端口</th>
+						<th>用户</th>
+						<th>连接情况</th>
+						<th>市场列表</th>
+					</tr>
+					<?php if (!empty($data_quosrclist) && isset($data_quosrclist['Result'])) : ?>
+					<?php $i = 0; ?>
+					<?php foreach($data_quosrclist['Result'] as $r): ?>
+						<?php foreach($r['ServerInfo'] as $r2): ?>
+						<tr>
+							<td><?php echo ++$i; ?></td>
+							<td><?php echo $r['QuoSrcName'] ?></td>
+							<td><?php echo $r2['IP'] ?></td>
+							<td><?php echo $r2['Port'] ?></td>
+							<td><?php echo $r2['User'] ?></td>
+							<td><?php echo $r['ConnResult'] ?></td>
+							<td><?php echo $r['Markets'] ?></td>
+						</tr>
+						<?php endforeach ?>
+					<?php endforeach ?>
+					<?php else: ?>
+						<tr><td colspan="7">暂无数据</td></tr>
+					<?php endif ?>
+				</table>
+				
+			</td>
+		</tr>
+	</table>
+</div>
+
+</body>
+</html>

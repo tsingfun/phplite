@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 用户权限</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/statics/js/layer.js"></script>
+	<script type="text/javascript" src="/statics/js/user.js?<?php echo time();?>"></script>
+	<style type="text/css">
+		div.main { padding:20px;}
+		#roleFrame{height:450px;}
+	</style>
+	<script type="text/javascript">
+		$(function(){
+			parent.changeLocation('运维 > 系统管理 > 用户权限');
+		});
+	</script>
+</head>
+
+<body>
+<div class="main">
+	<div class="table_title"><i>&nbsp;</i>用户管理</div>
+	<table class="table1 selectable" id="table_user">
+		<tr>
+			<th width="50px">序号</th>
+			<th width="150px">用户名</th>
+			<th width="180px">用户姓名</th>
+			<th>通讯地址</th>
+			<th width="120px">联系电话</th>
+			<th width="240px">E-mail</th>
+			<th width="100px">角色</th>
+		</tr>
+		<?php if (!empty($data_userlist) && isset($data_userlist['UserData'])) : ?>
+		<?php $i = 0; ?>
+		<?php foreach($data_userlist['UserData'] as $r): ?>
+			<tr>
+				<td><?php echo ++$i; ?></td>
+				<td><?php echo $r['UserID'] ?></td>
+				<td><?php echo $r['UserName'] ?></td>
+				<td class="left"><?php echo $r['UserAddr'] ?></td>
+				<td><?php echo $r['Tel'] ?></td>
+				<td class="left"><?php echo $r['Email'] ?></td>
+				<td><?php echo $r['UserRoleName'] ?></td>
+			</tr>
+			<?php endforeach ?>
+		<?php else: ?>
+			<tr><td colspan="7">暂无数据</td></tr>
+		<?php endif ?>
+	</table>
+	<div class="oper_icons">
+		<a href="javascript:user_add('table_user');" class="add">添加</a>
+		<a href="javascript:user_mod('table_user');" class="mod">修改</a>
+		<a href="javascript:user_del('table_user');" class="del">删除</a>
+	</div>
+	<br/>
+	<br/>
+	<br/>
+	<table style="width:100%;" id="table_layout">
+		<tr>
+			<td style="width:45%;vertical-align:top;">
+				<div class="table_title"><i>&nbsp;</i>角色管理</div>
+				<table class="table1 selectable" style="width:90%;" id="table_role">
+					<tr>
+						<th width="100px">角色ID</th>
+						<th width="150px" class="left">角色名称</th>
+						<th class="left">备注</th>
+					</tr>
+					<?php if (!empty($data_rolelist) && isset($data_rolelist['RoleData'])) : ?>
+					<?php foreach($data_rolelist['RoleData'] as $r): ?>
+						<tr>
+							<td><?php echo $r['RoleID'] ?></td>
+							<td class="left"><?php echo $r['RoleName'] ?></td>
+							<td class="left"><?php echo $r['RoleRemark'] ?></td>
+						</tr>
+						<?php endforeach ?>
+					<?php else: ?>
+						<tr><td colspan="3">暂无数据</td></tr>
+					<?php endif ?>
+				</table>
+				<div class="oper_icons">
+					<a href="javascript:role_add('table_role');" class="add">添加</a>
+					<a href="javascript:role_mod('table_role');" class="mod">修改</a>
+					<a href="javascript:role_del('table_role');" class="del">删除</a>
+				</div>
+			</td>
+			
+			<td style="vertical-align:top;">
+				<iframe id='roleFrame' src='/user.php?method=rolemenu' frameborder="0" scrolling="auto" style="width:100%;"></iframe>
+			</td>
+		</tr>
+	</table>
+</div>
+</body>
+</html>

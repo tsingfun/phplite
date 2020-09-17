@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 主机管理</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<style type="text/css">
+		div.main { padding:20px 30px; }
+		input[type="text"]{width:320px;}
+	</style>
+	<script type="text/javascript">
+		function close_layer(){
+			var index = parent.layer.getFrameIndex(window.name);
+			parent.layer.close(index);
+		}
+		
+		function showErrMsg(msg){
+			var errMsgObj = document.getElementById('errMsg');
+			errMsgObj.innerText = msg;
+			errMsgObj.style.display = 'inline-block';
+		}
+		
+		// 获取待交互的主框架
+		function MainFrame(){
+			return parent.mainFrame.contentWindow ? parent.mainFrame.contentWindow : parent.mainFrame;
+		}
+		
+		//提交添加/修改
+		function ok(){	
+			var hostip = document.getElementById('HostIP').value;
+			if (hostip==''){
+				showErrMsg('主机IP不能为空！');
+				return false;
+			}
+			var hostname = document.getElementById('HostName').value;
+			if (hostname==''){
+				showErrMsg('主机名称不能为空！');
+				return false;
+			}
+			
+			var hostremark = document.getElementById('HostRemark').value;
+			MainFrame().host_oper_apply('<?php echo $oper;?>', hostip, hostname, hostremark);
+			close_layer();
+		}
+		
+		<?php if ($oper=='Mod'): ?>
+		//修改时加载初始数据
+		$().ready(function(){
+			var trObj = $('#table_host', MainFrame().document).find('tr.selected');
+			$('#HostIP').val(trObj.children('td').eq(1).text());
+			$('#HostName').val(trObj.children('td').eq(2).text());
+			$('#HostRemark').val(trObj.children('td').eq(3).text());
+			
+			$('#HostIP').attr("disabled","disabled");
+		});
+		<?php endif ?>
+	</script>
+</head>
+
+<body>
+<div class="main">
+	<table class="tb_layout">
+		<tr>
+			<td style="width:80px;">主机IP：</td>
+			<td><input type="text" id="HostIP"/></td>
+		</tr>
+		<tr>
+			<td>主机名称：</td>
+			<td><input type="text" id="HostName"/></td>
+		</tr>
+		<tr>
+			<td>备注：</td>
+			<td><input type="text" id="HostRemark"/></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td style="height:40px;">
+				<input type="submit" onclick="ok();" value="确定"/>
+				&nbsp;&nbsp;<input type="reset" onclick="close_layer();" value="取消"/>
+				<a id="errMsg" style="color:red;margin-left:10px;display:none;"></a>
+			</td>
+		</tr>
+	</table>
+</div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 错误、警告详情</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<style type="text/css">
+		div.info { padding:10px; }
+	</style>
+</head>
+
+<body>
+
+<div class="info">
+	<table class="table1">
+		<tr>
+			<th style="width:40px;">序号</th>
+			<th style="width:40px;">级别</th>
+			<th style="width:110px;">主机</th>
+			<th style="width:120px;">应用</th>
+			<th style="width:130px;">类型</th>
+			<th style="width:150px;">时间</th>
+			<th class="left" style="min-width:200px;">详情</th>
+		</tr>
+		<?php if (!empty($data_ewdetail) && isset($data_ewdetail['ErrDetail'])) : ?>
+		<?php $i = 0; ?>
+		<?php foreach($data_ewdetail['ErrDetail'] as $r): ?>
+			<tr>
+				<td><?php echo ++$i; ?></td>
+				<!-- <td><img src="/statics/images/<?php echo $r['IsError']?'err':'warn' ?>.png"/></td> -->
+				<td><img src="/statics/images/<?php echo $_GET['IsError']?'err':'warn' ?>.png"/></td>
+				<td><?php echo $r['IP'] ?></td>
+				<td><?php echo $r['AppName'] ?></td>
+				<td><?php echo $_GET['AlarmName'] ?></td><!-- <td><?php echo $r['AlarmName'] ?></td> -->
+				<td><?php echo $r['NoticeTime'] ?></td>
+				<td class="left"><?php echo $r['NoticeInfo'] ?></td>
+			</tr>
+			<?php endforeach ?>
+		<?php else: ?>
+			<tr><td colspan="7">暂无数据</td></tr>
+		<?php endif ?>
+	</table>
+</div>
+
+</body>
+</html>

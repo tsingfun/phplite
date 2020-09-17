@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ EMS引擎错误详细日志</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<style type="text/css">
+		div.info { padding:5px; }
+	</style>
+</head>
+
+<body>
+
+<div class="info">
+	<div class="table_title"><i>&nbsp;</i>错误详细日志</div>
+	<?php if (!empty($data_errdetaillist) && isset($data_errdetaillist['Result']) && is_array($data_errdetaillist['Result'])) : ?>
+	<table class="table1">
+		<tr>
+			<th>序号</th>
+			<th>服务名称</th>
+			<th>实例ID</th>
+			<th>错误类型</th>
+			<th>错误发生的时间</th>
+			<th>错误发送的模块</th>
+			<th>错误说明</th>
+		</tr>
+		<?php $i = 0; ?>
+		<?php foreach($data_errdetaillist['Result'] as $r): ?>
+			<tr>
+				<td><?php echo ++$i; ?></td>
+				<td><?php echo $r['ServiceName'] ?></td>
+				<td><?php echo $r['InstanceID'] ?></td>
+				<td><?php echo $r['ErrorID'] ?></td>
+				<td><?php echo $r['ErrorTime'] ?></td>
+				<td><?php echo $r['Module'] ?></td>
+				<td class="left" title="<?php echo $r['ErrorInfo'] ?>"><?php echo str_cut($r['ErrorInfo'], 100) ?></td>
+			</tr>
+			<?php endforeach ?>
+	</table>
+	<?php else: ?>
+		<div style="color:#ff5300;border:1px solid #d8d8d8;text-align:center;padding:20px;">请选择错误报告以查看错误详细日志！</div>
+	<?php endif ?>
+</div>
+
+</body>
+</html>

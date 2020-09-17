@@ -1,0 +1,36 @@
+{
+	"MsgCode":1,
+	"ErrData":[
+		{
+			"IsError":1,
+			"Template":11,
+			"IP":"127.0.0.2",
+			"AppName":"测试应用",
+			"AlarmType":1001,
+			"AlarmName":"DB异常",
+			"ErrNum":1,
+			"LastDesc":"数据库连接失败.",
+			"LastTime":"2017/09/15",
+			"LastResolveTime":"09:00:00",
+			"HasError":1,
+			"HasSend2Eagle":0,
+			"HasSendEmail":0
+		},
+
+		{
+			"IsError":0,
+			"Template":22,
+			"IP":"127.0.0.1",
+			"AppName":"测试应用",
+			"AlarmType":1,
+			"AlarmName":"DB异常",
+			"ErrNum":1,
+			"LastDesc":"数据库连接失败.",
+			"LastTime":"2017/09/15",
+			"LastResolveTime":"09:00:00",
+			"HasError":1,
+			"HasSend2Eagle":0,
+			"HasSendEmail":0
+		}
+	]
+}

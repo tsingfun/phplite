@@ -1,0 +1,505 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 参数设置</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<link type="text/css" rel="stylesheet" href="/statics/css/tab.css"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/statics/js/layer.js"></script>
+	<script type="text/javascript" src="/statics/js/num.js"></script>
+	<script type="text/javascript" src="/statics/js/jquery.caret.js"></script>
+	<script type="text/javascript" src="/statics/js/jquery.ipaddress.js"></script>
+	<script type="text/javascript" src="/statics/js/paramset.js?<?php echo time();?>"></script>
+	<style type="text/css">
+		div.main { padding:20px; }
+		.table_title{font:13px/1.5 tahoma,arial,\5b8b\4f53; font-weight:bold; margin:10px 0 0 0;}
+	</style>
+	<script type="text/javascript">
+		var appTypeName = '<?php echo $AppName; ?>';
+		var WriteStamp = '<?php echo $data_param["WriteStamp"]; ?>';
+		var curUserId = '<?php echo get_cookie("UserId")?>';
+		var NeedRestart = <?php echo $data_param["NeedReStart"] ?>;
+		var MarkertOpen = <?php echo $data_param["MarkertOpen"] ?>;
+		
+		// 启用/灰掉区域
+		function enable_area(area_id, enabled) {
+			if (enabled) {
+				$('#oper_' + area_id).show();
+				$('.area_' + area_id).find("input,button,textarea,select").removeAttr('disabled');
+				$('.area_' + area_id).removeClass("block_disabled");
+			} else {
+				//是否隐藏操作按钮
+				$('#oper_' + area_id).hide();
+				//是否变灰
+				$('.area_' + area_id).find("input,button,textarea,select").attr('disabled', true);
+				$('.area_' + area_id).removeClass("block_disabled").addClass("block_disabled");
+			}
+		}
+		
+		$(function(){
+			<?php if($type=='yw'):?>
+				parent.changeLocation('运维 > 参数设置 > WTS');
+			<?php elseif($type=='emsmgr'): ?>
+				parent.changeLocation('运维 > 参数设置 > EMS.Manager');
+			<?php elseif($type=='emseng'): ?>
+				parent.changeLocation('运维 > 参数设置 > EMS.Engine');
+			<?php elseif($type=='pbquo'): ?>
+				parent.changeLocation('运维 > 参数设置 > PB.Quotation');
+			<?php elseif($type=='yy'): ?>
+				parent.changeLocation('运营 > WTS运营');
+			<?php endif ?>
+			
+			
+	<?php if ($type=='yy'): ?>
+			<!--运营-->
+			// etf勾选框
+			<?php if($data_param['WtsStock.ini']['ETF过滤']['过滤标志']!='1'): ?>
+				enable_area('etf', false);
+			<?php endif ?>
+			$('#etf_enable').click(function(){
+				enable_area('etf', $(this).is(':checked'));
+			});
+			
+	<?php elseif ($type=='yw'): ?>
+			<!--运维-->
+			
+			// md5勾选框
+			<?php if($data_param['WtsStock.ini']['MD5']['ENABLE']!='1'): ?>
+				enable_area('md5', false);
+			<?php endif ?>
+			$('#md5_enable').click(function(){
+				enable_area('md5', $(this).is(':checked'));
+			});
+			
+			// 交易权限管理勾选框
+			<?php if($data_param['WtsStock.ini']['宏汇处理方式']['账号权限管理']!='1'): ?>
+				enable_area('trade', false);
+			<?php endif ?>
+			$('#trade_enable').click(function(){
+				enable_area('trade', $(this).is(':checked'));
+			});
+			
+	<?php endif ?>
+		});
+	</script>
+</head>
+
+<body style="overflow:hidden;">
+<div class="main">
+	<div style="padding:10px 0 30px 0;">
+		<form action="/paramset.php?method=req_group_param&type=<?php echo $type ?>" method="post" name="wtsForm">
+		<input type="hidden" name="AppName" value="<?php echo $AppName; ?>"/>
+		组别：
+		<select name="AppGroup" onchange="javascript:document.wtsForm.submit();">
+          <?php foreach($data_appgroup['AppGroupList'] as $r): ?>
+			<option value="<?php echo $r ?>" <?php if ($r == $CurAppGroup) echo 'selected'; ?> ><?php echo $r ?></option>
+		  <?php endforeach ?>
+        </select>
+		</form>
+	</div>
+	
+	<div id="menuTitle" class="tab_title">
+		<ul>
+		<?php if ($type=='yy'): ?>
+			<!--运营-->
+            <li class="tab_title_l"><a href="javascript:void(0);" id="etf">ETF过滤<?php if(!empty($HostIP)):?><font class="tab_mark">*</font><?php endif?></a></li>
+            <li class="tab_title_l_down"><a href="javascript:void(0);" id="bwlist">黑白名单管理<?php if(!empty($HostIP)):?><font class="tab_mark">*</font><?php endif?></a></li>
+			<!-- <li class="tab_title_l_down"><a href="javascript:void(0);" id="account">多账户授权管理</a></li> -->
+			
+		<?php elseif ($type=='yw'): ?>
+			<!--运维-->
+			<li class="tab_title_l"><a href="javascript:void(0);" id="oem">OEM设置<?php if(!empty($HostIP)):?><font class="tab_mark">*</font><?php endif?></a></li>
+			<li class="tab_title_l_down"><a href="javascript:void(0);" id="trade">交易权限管理<?php if(!empty($HostIP)):?><font class="tab_mark">*</font><?php endif?></a></li>
+			<li class="tab_title_l_down"><a href="javascript:void(0);" id="ems">EMS算法服务器设置<?php if(!empty($HostIP)):?><font class="tab_mark">*</font><?php endif?></a></li>
+			
+		<?php elseif ($type=='emsmgr'): ?>
+			<!--EMS.Manager-->
+			<li class="tab_title_l"><a href="javascript:void(0);" id="emsmgr">EMS.Manager<?php if(!empty($HostIP)):?><font class="tab_mark">*</font><?php endif?></a></li>
+			
+		<?php elseif ($type=='emseng'): ?>
+			<!--EMS.Engine-->
+			<li class="tab_title_l"><a href="javascript:void(0);" id="emseng">EMS.Engine<?php if(!empty($HostIP)):?><font class="tab_mark">*</font><?php endif?></a></li>
+			
+		<?php elseif ($type=='pbquo'): ?>
+			<!--PB.Quotation-->
+			<li class="tab_title_l"><a href="javascript:void(0);" id="pbquo">PB.Quotation<?php if(!empty($HostIP)):?><font class="tab_mark">*</font><?php endif?></a></li>
+			<?php endif ?>
+        </ul>
+        <a id="load_from">载入配置</a>
+    </div>
+    <div id="load_div">
+    	<ul>
+    		<?php if (isset($data_iplist['AppData'])) : ?>
+			<?php foreach($data_iplist['AppData'] as $r): ?>
+			<li><a href="/paramset.php?method=req_param_by_ip&type=<?php echo $type; ?>&AppName=<?php echo $AppName; ?>&AppGroup=<?php echo $CurAppGroup; ?>&HostIP=<?php echo $r['HostIP']?>"><?php echo $r['HostIP']?> - <?php echo $r['AppName']?>&nbsp;(<?php echo $r['AppGroup']?>)</a></li>
+			<?php endforeach ?>
+			<?php endif ?>
+    	</ul>
+    </div>
+
+<?php if ($type=='yy'): ?>
+<!--运营-->
+	<div id="etfBox" class="menu">
+		<label><input name="etf_enable" id="etf_enable" type="checkbox" <?php if($data_param['WtsStock.ini']['ETF过滤']['过滤标志']=='1') echo 'checked';?>/>ETF代码过滤</label>
+		<div>
+			<div class="table_title area_etf">允许的ETF代码列表：</div>
+			<table class="table1 selectable area_etf" style="width:260px;" id="table_etf">
+				<tr>
+					<th>市场</th>
+					<th>ETF代码</th>
+				</tr>
+				<?php if (isset($data_param['ETFList'])) : ?>
+				<?php foreach($data_param['ETFList'] as $r): ?>
+				<tr>
+					<td><?php echo $r['market'] ?></td>
+					<td><?php echo $r['code'] ?></td>
+				</tr>
+				<?php endforeach ?>
+				<?php endif ?>
+			</table>
+			<div class="oper_icons" id="oper_etf">
+				<a href="javascript:etf_add('table_etf');" class="add">添加</a>
+				<a href="javascript:etf_mod('table_etf');" class="mod">修改</a>
+				<a href="javascript:etf_del('table_etf');" class="del">删除</a>
+			</div>
+		</div>
+	</div>
+
+	<div id="bwlistBox" class="menu" style="display:none;">
+		<table class="tb_layout">
+			<tr>
+				<td>黑白名单限制模式：</td>
+				<td>
+					<select id="bwlist_mode">
+					  <option value="0" <?php if($data_param['WtsStock.ini']['宏汇处理方式']['黑白名单限制模式']=='0') echo 'selected';?>>不受限制</option>
+					  <option value="1" <?php if($data_param['WtsStock.ini']['宏汇处理方式']['黑白名单限制模式']=='1') echo 'selected';?>>只限制黑名单</option>
+					  <option value="2" <?php if($data_param['WtsStock.ini']['宏汇处理方式']['黑白名单限制模式']=='2') echo 'selected';?>>只允许白名单</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>账号匹配模式：</td>
+				<td>
+					<select id="bwlist_match">
+					  <option value="0" <?php if($data_param['WtsStock.ini']['宏汇处理方式']['黑白名单匹配模式']=='0') echo 'selected';?>>完全匹配</option>
+					  <option value="1" <?php if($data_param['WtsStock.ini']['宏汇处理方式']['黑白名单匹配模式']=='1') echo 'selected';?>>部分匹配</option>
+					</select>
+				</td>
+			</tr>
+		</table>
+		<br/>
+		
+		<table>
+			<tr>
+				<td style="vertical-align:top;">
+					<div class="table_title">账号黑名单列表：</div>
+					<table class="table1 selectable" style="width:200px;" id="table_blacklist">
+						<tr>
+							<th>资金账号</th>
+						</tr>
+						<?php if (isset($data_param['BlackList'])) : ?>
+						<?php foreach($data_param['BlackList'] as $r): ?>
+						<tr>
+							<td><?php echo $r ?></td>
+						</tr>
+						<?php endforeach ?>
+						<?php endif ?>
+					</table>
+					<div class="oper_icons">
+						<a href="javascript:bwlist_add('table_blacklist');" class="add">添加</a>
+						<a href="javascript:bwlist_mod('table_blacklist');" class="mod">修改</a>
+						<a href="javascript:bwlist_del('table_blacklist');" class="del">删除</a>
+					</div>
+				</td>
+				<td style="width:50px;"></td>
+				<td style="vertical-align:top;">
+					<div class="table_title">账号白名单列表：</div>
+					<table class="table1 selectable" style="width:200px;" id="table_whitelist">
+						<tr>
+							<th>资金账号</th>
+						</tr>
+						<?php if (isset($data_param['WhiteList'])) : ?>
+						<?php foreach($data_param['WhiteList'] as $r): ?>
+						<tr>
+							<td><?php echo $r ?></td>
+						</tr>
+						<?php endforeach ?>
+						<?php endif ?>
+					</table>
+					<div class="oper_icons">
+						<a href="javascript:bwlist_add('table_whitelist');" class="add">添加</a>
+						<a href="javascript:bwlist_mod('table_whitelist');" class="mod">修改</a>
+						<a href="javascript:bwlist_del('table_whitelist');" class="del">删除</a>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+	
+	<!-- 
+	<div id="accountBox" class="menu" style="display:none;">
+		<table class="tb_layout">
+			<tr>
+				<td>多账户登录限制模式：</td>
+				<td>
+					<select style="width:305px;">
+					  <option value="不受限制">不受限制</option>
+					  <option value="不受限制">启用限制</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>出错提示信息：</td>
+				<td><input type="text" style="width:300px;" value="禁止多账户登陆，请联系券商客户经理!"/></td>
+			</tr>
+		</table>
+		<br/>
+		<div>
+			<div class="table_title">多账户授权名单：</div>
+			<table class="table1" style="width:600px;">
+				<tr>
+					<th style="width:80px;">序号</th>
+					<th class="left">客户号,资金账户</th>
+				</tr>
+				<tr>
+					<td>1</td>
+					<td class="left">10026846,10026846</td>
+				</tr>
+				<tr>
+					<td>2</td>
+					<td class="left">1895011,1895011</td>
+				</tr>
+			</table>
+			<div class="oper_icons">
+				<a href="javascript:void(0);" class="add">添加</a>
+				<a href="javascript:void(0);" class="mod">修改</a>
+				<a href="javascript:void(0);" class="del">删除</a>
+			</div>
+		</div>
+	</div>
+	-->
+	
+<?php elseif ($type=='yw'): ?>
+<!--运维-->	
+
+	<div id="oemBox" class="menu">
+		<table class="tb_layout">
+			<tr>
+				<td>OEM文本：</td>
+				<td>
+					<input type="text" value="<?php echo $data_param['WtsStock.ini']['OEM']['ID'] ?>" style="width:300px;" id="oem_id"/>
+				</td>
+				<td>(0-40个字符, 空为不限)</td>
+			</tr>
+			<tr>
+				<td>警告信息：</td>
+				<td>
+					<input type="text" value="<?php echo $data_param['WtsStock.ini']['OEM']['ERRINFO'] ?>" style="width:300px;" id="oem_errinfo"/>
+				</td>
+				<td>(1-60个字符)</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td><label><input type="checkbox" id="md5_enable" <?php if($data_param['WtsStock.ini']['MD5']['ENABLE']=='1') echo 'checked';?>/>启用MD5检查</label></td>
+			</tr>
+			<tr class="area_md5">
+				<td>MD5非法提示信息：</td>
+				<td>
+					<input type="text" value="<?php echo $data_param['WtsStock.ini']['MD5']['ERRINFO'] ?>" style="width:300px;" id="md5_errinfo"/>
+				</td>
+			</tr>
+		</table>
+		<div>
+			<div class="table_title area_md5">许可客户端MD5列表：</div>
+			<table class="table1 selectable area_md5" id="table_md5" style="width:600px;">
+				<tr>
+					<th style="width:50px;">序号</th>
+					<th style="width:100px;">终端类型</th>
+					<th style="width:200px;">MD5码</th>
+					<th>备注</th>
+				</tr>
+				<?php if (isset($data_param['ModulesMd5.json']['Md5Info'])) : ?>
+				<?php $i = 0; ?>
+				<?php foreach($data_param['ModulesMd5.json']['Md5Info'] as $r): ?>
+				<tr>
+					<td><?php echo ++$i; ?></td>
+					<td><?php echo $r['apptype'] ?></td>
+					<td><?php echo $r['md5'] ?></td>
+					<td><?php echo $r['remark'] ?></td>
+				</tr>
+				<?php endforeach ?>
+				<?php endif ?>
+			</table>
+			<div class="oper_icons" id="oper_md5">
+				<a href="javascript:md5_add('table_md5');" class="add">添加</a>
+				<a href="javascript:md5_mod('table_md5');" class="mod">修改</a>
+				<a href="javascript:md5_del('table_md5');" class="del">删除</a>
+			</div>
+		</div>
+	</div>
+	
+	<div id="tradeBox" class="menu" style="display:none;">
+		<label><input id="trade_enable" type="checkbox" <?php if($data_param['WtsStock.ini']['宏汇处理方式']['账号权限管理']=='1') echo 'checked';?>/>支持权限管理</label><br/><br/>
+		<div class="table_title area_trade">交易权限管理：</div>
+		<table class="table1 selectable area_trade" id="table_trade" style="width:900px;">
+			<tr>
+				<th>资金账户</th>
+				<th>IP地址</th>
+				<th>MAC地址</th>
+				<th>调仓</th>
+				<th>自动下单确认</th>
+				<th>撤单(文件)</th>
+				<th>下单流速上限</th>
+				<th>撤单流速上限</th>
+				<th>日撤单数上限</th>
+				<th>查询流速上限</th>
+			</tr>
+			<?php if (isset($data_param['AccountAuthority.json']['AccountAuthority'])) : ?>
+			<?php foreach($data_param['AccountAuthority.json']['AccountAuthority'] as $r): ?>
+			<tr>
+				<td><?php echo $r['accountcode'] ?></td>
+				<td><?php echo $r['ip'] ?></td>
+				<td><?php echo $r['mac'] ?></td>
+				<td><?php echo $r['tuneposition']==1?'启用':'禁止' ?></td>
+				<td><?php echo $r['orderconfirm']==1?'启用':'禁止' ?></td>
+				<td><?php echo $r['filewithdraw']==1?'启用':'禁止' ?></td>
+				<td><?php echo $r['orderspeed'] ?></td>
+				<td><?php echo $r['withdrawspeed'] ?></td>
+				<td><?php echo $r['withdrawdaily'] ?></td>
+				<td><?php echo $r['searchspeed'] ?></td>
+			</tr>
+			<?php endforeach ?>
+			<?php endif ?>
+		</table>
+		<div class="oper_icons" id="oper_trade">
+			<a href="javascript:trade_add('table_trade');" class="add">添加</a>
+			<a href="javascript:trade_mod('table_trade');" class="mod">修改</a>
+			<a href="javascript:trade_del('table_trade');" class="del">删除</a>
+		</div>
+	</div>
+	
+	<div id="emsBox" class="menu" style="display:none;">
+		<table class="tb_layout">
+			<tr>
+				<td>IP地址：</td>
+				<td style="width:300px;"><input type="text" class="ip" name="ems_ip" value="<?php echo $data_param['WtsStock.ini']['EMS']['IpAddress'] ?>" id="ems_ip"/></td>
+			</tr>
+			<tr>
+				<td>端口：</td>
+				<td><input type="text" class="num" style="width:80px;" value="<?php echo $data_param['WtsStock.ini']['EMS']['port'] ?>" id="ems_port"/></td>
+			</tr><tr>
+				<td>最大超时时间：</td>
+				<td><input type="text" class="num" style="width:80px;" value="<?php echo $data_param['WtsStock.ini']['EMS']['timeout'] ?>" id="ems_timeout"/>&nbsp;&nbsp;秒</td>
+			</tr>
+		</table>
+	</div>
+
+<?php elseif ($type=='emsmgr'): ?>
+<!--EMS.Manager-->
+	<div id="emsmgrBox" class="menu">
+		<table class="tb_layout">
+			<tr>
+				<td>数据库备份时间：</td>
+				<td><input type="text" style="width:300px;" value="<?php echo $data_param['ems_manager.ini']['services']['backuptime'] ?>" id="emsmgr_backuptime"/></td>
+				<td>(例:210000)</td>
+			</tr><tr>
+				<td>重启时间：</td>
+				<td><input type="text" style="width:300px;" value="<?php echo $data_param['ems_manager.ini']['services']['exittime'] ?>" id="emsmgr_restarttime"/></td>
+				<td>(例:230000)</td>
+			</tr>
+		</table>
+	</div>
+
+<?php elseif ($type=='emseng'): ?>
+<!--EMS.Engine-->
+	<div id="emsengBox" class="menu">
+		<table class="tb_layout">
+			<tr>
+				<td>重启时间：</td>
+				<td><input type="text" style="width:300px;" value="<?php echo $data_param['ems_engine.ini']['SYS']['exittime'] ?>" id="emseng_restarttime"/></td>
+				<td>(例:230000)</td>
+			</tr>
+		</table>
+		<div>
+			<div class="table_title">行情源配置：</div>
+			<table class="table1 selectable" id="table_emseng" style="width:900px;">
+				<tr>
+					<th style="width:50px;">序号</th>
+					<th style="width:100px;">目标服务器</th>
+					<th style="width:100px;">IP</th>
+					<th style="width:80px;">端口</th>
+					<th style="width:120px;">用户</th>
+					<th style="width:100px;">密码</th>
+					<th>市场列表</th>
+				</tr>
+				<?php if (isset($data_param['QuoList'])) : ?>
+				<?php $i = 0; ?>
+				<?php foreach($data_param['QuoList'] as $r): ?>
+				<tr>
+					<td><?php echo ++$i; ?></td>
+					<td><?php echo $r['QuoSrc'] ?></td>
+					<td><?php echo $r['IP'] ?></td>
+					<td><?php echo $r['Port'] ?></td>
+					<td><?php echo $r['User'] ?></td>
+					<td><?php echo $r['Pwd'] ?></td>
+					<td><?php echo $r['MarketFilter'] ?></td>
+				</tr>
+				<?php endforeach ?>
+				<?php endif ?>
+			</table>
+			<div class="oper_icons">
+				<a href="javascript:quosrc_add('table_emseng');" class="add">添加</a>
+				<a href="javascript:quosrc_mod('table_emseng');" class="mod">修改</a>
+				<a href="javascript:quosrc_del('table_emseng');" class="del">删除</a>
+			</div>
+		</div>
+	</div>
+	
+<?php elseif ($type=='pbquo'): ?>
+<!--PB.Quotation-->
+	<div id="pbquoBox" class="menu">
+		<div>
+			<div class="table_title">行情源配置：</div>
+			<table class="table1 selectable" id="table_pbquo" style="width:900px;">
+				<tr>
+					<th style="width:50px;">序号</th>
+					<th style="width:100px;">目标服务器</th>
+					<th style="width:100px;">IP</th>
+					<th style="width:80px;">端口</th>
+					<th style="width:120px;">用户</th>
+					<th style="width:100px;">密码</th>
+					<th>市场列表</th>
+				</tr>
+				<?php if (isset($data_param['QuoList'])) : ?>
+				<?php $i = 0; ?>
+				<?php foreach($data_param['QuoList'] as $r): ?>
+				<tr>
+					<td><?php echo ++$i; ?></td>
+					<td><?php echo $r['QuoSrc'] ?></td>
+					<td><?php echo $r['IP'] ?></td>
+					<td><?php echo $r['Port'] ?></td>
+					<td><?php echo $r['User'] ?></td>
+					<td><?php echo $r['Pwd'] ?></td>
+					<td><?php echo $r['MarketFilter'] ?></td>
+				</tr>
+				<?php endforeach ?>
+				<?php endif ?>
+			</table>
+			<div class="oper_icons">
+				<a href="javascript:quosrc_add('table_pbquo');" class="add">添加</a>
+				<a href="javascript:quosrc_mod('table_pbquo');" class="mod">修改</a>
+				<a href="javascript:quosrc_del('table_pbquo');" class="del">删除</a>
+			</div>
+		</div>
+	</div>
+
+<?php endif ?>
+
+	<br/>
+	<input type="submit" onclick="paramSubmit('<?php echo $AppName; ?>', '<?php echo $CurAppGroup; ?>');" value="提交"/>
+</div>
+</body>
+</html>

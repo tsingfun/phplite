@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ EMS算法单列表</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/statics/js/layer.js"></script>
+	<style type="text/css">
+		div.main{ padding:5px; }
+	</style>
+<script language="javascript">
+$(document).ready( function(){
+	
+	//停止算法单确认框
+	$('a.oper_btn').click(function(){
+		
+		var EngineID = <?php echo $EngineID;?>;
+		var AlgoOrderID = $(this).parent().parent("tr").children('td').eq(8).html();
+		
+		//询问框
+		parent.layer.confirm('确定要停止算法单(' + AlgoOrderID + ')？', {
+		  btn: ['确认','取消'], //按钮
+		  title: '确认'
+		}, function(){
+		   	//ok
+		   	$.ajax({
+			    url:'/hostapp.php?method=ems_inst_stop',
+			    data:{'EngineID':EngineID, 'AlgoOrderID':AlgoOrderID},
+			    type:'GET',
+			    async:true,    //或false,是否异步
+			    timeout:10000,    //超时时间
+			    dataType:'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+			    success:function(data, textStatus, jqXHR){
+			    	if (data['Result'] == 'Success'){
+			    		
+			    		//------ 执行成功 --------
+			    		parent.layer.alert('停止成功！', {
+			    			icon: 1, 
+			    			end:function(){
+			    				window.location.reload(); // 刷新页面
+			    			}
+			    		});
+			    		
+			    	} else {
+			    		
+			    		//------ 执行失败 --------
+			    		parent.layer.alert('发生错误：' + data['Result'], {icon: 2});
+			    	}
+			    },
+			    error:function(xhr, textStatus) {
+			    	parent.layer.alert('失败[' + textStatus + ']', {icon: 2});
+			    },
+			    complete:function(){
+			    	
+			    }
+			})
+			
+		}, function(){
+		  	//cancel
+		});
+	});
+
+});
+</script>
+</head>
+
+<body>
+
+<div class="main">
+	<div style="padding:10px 0;">
+		<form action="/hostapp.php?method=ems_inst" method="post" name="instForm">
+		&nbsp;算法单ID：
+		<input type="hidden" name="EngineID" value="<?php echo $EngineID;?>"/>
+		<input type="text" style="height:27px;" name="AlgoOrderID" value="<?php echo $AlgoOrderID;?>"/>
+		&nbsp;&nbsp;&nbsp;<input type="button" onclick="javascript:document.instForm.submit();" value="查询"/>
+		</form>
+	</div>
+	
+	<table class="table1" style="min-width:1000px;">
+		<tr>
+			<th>序号</th>
+			<th>资金账号</th>
+			<th>代码</th>
+			<th>市场</th>
+			<th>买卖</th>
+			<th>操作</th>
+			<th>算法状态</th>
+			<th>算法名称</th>
+			<th>算法单ID</th>
+			<th>执行进度</th>
+			<th>开始时间</th>
+			<th>结束时间</th>
+			<th>参数说明</th>
+			<th>备注</th>
+		</tr>
+		<?php if (isset($data_instlist) && isset($data_instlist['Result'])) : ?>
+			<?php $i = 0; ?>
+			<?php foreach($data_instlist['Result'] as $r): ?>
+			<tr>
+				<td><?php echo ++$i; ?></td>
+				<td><?php echo $r['AccountCode'] ?></td>
+				<td><?php echo $r['Code'] ?></td>
+				<td><?php echo $r['MarketCode'] ?></td>
+				<td style="color:<?php echo chr($r['BSFlag'])=='B'?'red':'green' ?>"><?php echo chr($r['BSFlag'])=='B'?'买入':'卖出' ?></td>
+				<td><?php if(chr($r['AlgoStatus'])=='W'||chr($r['AlgoStatus'])=='P') echo '<a class="oper_btn">停止</a>'; ?></td>
+				<td><?php echo get_ems_order_status(chr($r['AlgoStatus'])) ?></td>
+				<td><?php echo $r['AlgoName'] ?></td>
+				<td><?php echo $r['InsID'] ?></td>
+				<td><?php echo $r['DealedVol'] ?> / <?php echo $r['OrderVol'] ?></td>
+				<td><?php echo $r['StartTime'] ?></td>
+				<td><?php echo $r['StopTime'] ?></td>
+				<td title="<?php echo $r['Brief'] ?>"><?php echo str_cut($r['Brief'], 50) ?></td>
+				<td><?php echo $r['Remark'] ?></td>
+			</tr>
+			<?php endforeach ?>
+		<?php else: ?>
+			<tr><td colspan="14">暂无数据</td></tr>
+		<?php endif ?>
+	</table>
+</div>
+
+</body>
+</html>

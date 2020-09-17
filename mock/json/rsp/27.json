@@ -1,0 +1,132 @@
+{
+    "AppName":"WTS",
+    "AppGroup":"PC",    
+    
+    "WtsStock.ini":{
+    	"OEM":{
+        	"ID":"客户端MD5不匹配,禁止登陆！",
+       		"ERRINFO":"请使用券商OEM版登陆！"
+        },
+        
+        "MD5":{
+        	"ENABLE":"1",
+       		"ERRINFO":"客户端MD5不匹配,禁止登陆！"
+        },
+        
+        "宏汇处理方式":{
+        	"账号权限管理":"1",
+        	"黑白名单限制模式":"1",
+        	"黑白名单匹配模式":"1"
+        },
+        
+        "EMS":{
+        	"IpAddress":"10.102.16.96",
+        	"port":"20170",
+        	"timeout":"30"
+        },
+        
+        "ETF过滤":{
+        	"过滤标志":"1",
+       		"ETF数量":"2",
+       		"市场0":"0",
+       		"代码0":"510050",
+       		"市场1":"1",
+       		"代码1":"150001"
+        }
+    },
+    
+    "ModulesMd5.json":{
+        "Md5Info":[
+            {
+                "apptype":"WDADR",
+                "md5":"aaa",
+                "remark":""
+            },
+            {
+                "apptype":"WTT",
+                "md5":"%04d-%02d-%02d",
+                "remark":"a"
+            }
+        ]
+    },
+    
+    "AccountAuthority.json":{
+        "AccountAuthority":[
+            {
+                "accountcode":"001",
+                "ip":"111.1.1.1",
+                "mac":"",
+                "tuneposition":0,
+                "orderconfirm":0,
+                "filewithdraw":0,
+                "orderspeed":0,
+                "withdrawspeed":0,
+                "withdrawdaily":0,
+                "searchspeed":0
+            },
+            {
+                "accountcode":"002",
+                "ip":"111.102.16.103",
+                "mac":"",
+                "tuneposition":0,
+                "orderconfirm":0,
+                "filewithdraw":0,
+                "orderspeed":1,
+                "withdrawspeed":2,
+                "withdrawdaily":3,
+                "searchspeed":4
+            }
+        ]
+    },
+
+    "BlackList.txt":";================================白名单清单================================\n00021\r\n00022\r\n00023\r\n00002",
+
+    "WhiteList.txt":";================================黑名单清单================================\n00003\r\n00004",
+    
+    
+    
+    "ems_manager.ini":{
+    	"services":{"backuptime":210000, "exittime":230000}
+    },
+
+	"ems_engine.ini":{
+    	"SYS":{"exittime":"19:00:00"},
+    	"TDFAPI":{"SrcSeq":"SRC_SH;SRC_SZ"},
+    	"SRC_SH":{
+    		"MarketFilter":"SH-2;",
+    		"ServerNum":1,
+    		"IP0":"10.100.7.36",
+			"Port0":10201,
+			"User0":"tdf_test",
+			"Password0":"tdf_test"
+    	},
+    	"SRC_SZ":{
+    		"MarketFilter":"SZ-2;",
+    		"ServerNum":1,
+    		"IP0":"10.100.7.36",
+			"Port0":10201,
+			"User0":"tdf_test",
+			"Password0":"tdf_test"
+    	}
+    },
+    
+    "PB_Quotation.ini":{
+    	"TDFAPI":{"SrcSeq":"SRC_SH;SRC_SZ"},
+    	"SRC_SH":{
+    		"MarketFilter":"SH-2;",
+    		"ServerNum":1,
+    		"IP0":"10.100.7.36",
+			"Port0":10201,
+			"User0":"tdf_test",
+			"Password0":"tdf_test"
+    	},
+    	"SRC_SZ":{
+    		"MarketFilter":"SZ-2;",
+    		"ServerNum":1,
+    		"IP0":"10.100.7.36",
+			"Port0":10201,
+			"User0":"tdf_test",
+			"Password0":"tdf_test"
+    	}
+    }
+}

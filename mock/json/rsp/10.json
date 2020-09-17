@@ -1,0 +1,60 @@
+{
+	"MsgCode":10,
+	"AppData":[
+		{
+			"AppName":"PB.Manager",
+			"IsAutoStart":1,
+			"IsDeamon":0,
+			"AppRunningStatus":"运行中",
+			"AppRestartCount":0,
+			"AppCpuUsage":"12 %",
+			"AppMemUsage":"22.00 MB",
+			"AppConnNum":"--",
+			"AppThroughput":"--",
+			"AppVersion":"2017/8/18 16:01:35",
+			"LastParamSetTime":"2017/9/11 10:01:00"
+		},
+		
+		{
+			"AppName":"PB.Compliance",
+			"IsAutoStart":0,
+			"IsDeamon":1,
+			"AppRunningStatus":"已停止",
+			"AppRestartCount":1,
+			"AppCpuUsage":"2 %",
+			"AppMemUsage":"23.00 MB",
+			"AppConnNum":"--",
+			"AppThroughput":"--",
+			"AppVersion":"2017/8/18 16:01:35",
+			"LastParamSetTime":"2017/9/11 10:01:00"
+		},
+		
+		{
+			"AppName":"PB.Quotation",
+			"IsAutoStart":0,
+			"IsDeamon":0,
+			"AppRunningStatus":"已停止",
+			"AppRestartCount":1,
+			"AppCpuUsage":"2 %",
+			"AppMemUsage":"23.00 MB",
+			"AppConnNum":"--",
+			"AppThroughput":"--",
+			"AppVersion":"2017/8/18 16:01:35",
+			"LastParamSetTime":"2017/9/11 10:01:00"
+		},
+		
+		{
+			"AppName":"PB.Trade",
+			"IsAutoStart":1,
+			"IsDeamon":1,
+			"AppRunningStatus":"已停止",
+			"AppRestartCount":1,
+			"AppCpuUsage":"2 %",
+			"AppMemUsage":"23.00 MB",
+			"AppConnNum":"--",
+			"AppThroughput":"--",
+			"AppVersion":"2017/8/18 16:01:35",
+			"LastParamSetTime":"2017/9/11 10:01:00"
+		}
+	]
+}

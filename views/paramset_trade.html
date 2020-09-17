@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 权限设置</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/statics/js/jquery.caret.js"></script>
+	<script type="text/javascript" src="/statics/js/jquery.ipaddress.js"></script>
+	<script type="text/javascript" src="/statics/js/num.js"></script>
+	<style type="text/css">
+		div.main { padding:20px 30px; }
+		input[type="text"]{width:300px;}
+	</style>
+    <script type="text/javascript">
+		function close_layer(){
+			var index = parent.layer.getFrameIndex(window.name);
+			parent.layer.close(index);
+		}
+		
+		function showErrMsg(msg){
+			var errMsgObj = document.getElementById('errMsg');
+			errMsgObj.innerText = msg;
+			errMsgObj.style.display = 'inline-block';
+		}
+		
+		// 获取待交互的主框架
+		function MainFrame(){
+			return parent.mainFrame.contentWindow ? parent.mainFrame.contentWindow : parent.mainFrame;
+		}
+		
+		//提交添加/修改
+		function ok(){	
+			var accountcode = document.getElementById('accountcode').value;
+			//if (accountcode==''){
+			//	showErrMsg('资金账户不能为空！');
+			//	return false;
+			//}
+			var ip = document.getElementById('ip').value;
+			if (ip==''){
+				showErrMsg('IP不能为空！');
+				return false;
+			}
+			var mac = document.getElementById('mac').value;
+			//if (mac==''){
+			//	showErrMsg('MAC地址不能为空！');
+			//	return false;
+			//}
+			var tuneposition = $("input[name='tuneposition']:checked").val();
+			var orderconfirm = $("input[name='orderconfirm']:checked").val();
+			var filewithdraw = $("input[name='filewithdraw']:checked").val();
+			
+			var orderspeed = parseInt(document.getElementById('orderspeed').value);
+			var withdrawspeed = parseInt(document.getElementById('withdrawspeed').value);
+			var withdrawdaily = parseInt(document.getElementById('withdrawdaily').value);
+			var searchspeed = parseInt(document.getElementById('searchspeed').value);
+
+			MainFrame().trade_callback('<?php echo $tableid;?>', '<?php echo $oper;?>', accountcode, ip, mac, 
+					tuneposition, orderconfirm, filewithdraw, orderspeed, withdrawspeed, withdrawdaily, searchspeed);
+			close_layer();
+		}
+		
+		$(function(){
+	        <?php if ($oper=='mod'): ?>
+			//修改时加载初始数据
+			var trObj = $('#<?php echo $tableid;?>', MainFrame().document).find('tr.selected');
+			$('#accountcode').val(trObj.children('td').eq(0).text());
+			
+			$('#ip').val(trObj.children('td').eq(1).text());
+			$('.ip').ipaddress();
+			
+			$('#mac').val(trObj.children('td').eq(2).text());
+			$("input[name='tuneposition'][value='" + trObj.children('td').eq(3).text() + "']").attr('checked','true');
+			$("input[name='orderconfirm'][value='" + trObj.children('td').eq(4).text() + "']").attr('checked','true');
+			$("input[name='filewithdraw'][value='" + trObj.children('td').eq(5).text() + "']").attr('checked','true');
+			$('#orderspeed').val(trObj.children('td').eq(6).text());
+			$('#withdrawspeed').val(trObj.children('td').eq(7).text());
+			$('#withdrawdaily').val(trObj.children('td').eq(8).text());
+			$('#searchspeed').val(trObj.children('td').eq(9).text());
+			<?php else:?>
+				$('.ip').ipaddress();
+			<?php endif ?>
+	     });
+	</script>
+</head>
+
+<body>
+<div class="main">
+	<table class="tb_layout" style="width:470px;">
+		<tr>
+			<td style="width:100px;">资金账户：</td>
+			<td style="width:350px;"><input type="text" style="width:340px" id="accountcode"/></td>
+		</tr>
+		<tr>
+			<td>IP&nbsp;&nbsp;&nbsp;&nbsp;地址：</td>
+			<td><input type="text" id="ip" name="ip" style="width:98%;" value="255.255.255.255" class="ip"/></td>
+		</tr>
+		<tr>
+			<td>MAC&nbsp;地址：</td>
+			<td><input type="text" style="width:185px;" id="mac"/>&nbsp;示例：6C-0B-84-A7-0D-CA</td>
+		</tr>
+		<tr>
+			<td>调&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;仓：</td>
+			<td><label><input type="radio" name="tuneposition" value="启用"/>启用</label>&nbsp;&nbsp;&nbsp;&nbsp;
+				<label><input type="radio" name="tuneposition" value="禁止" checked="checked"/>禁止</label>
+			</td>
+		</tr>
+		<tr>
+			<td>自动下单确认：</td>
+			<td><label><input type="radio" name="orderconfirm" value="启用"/>启用</label>&nbsp;&nbsp;&nbsp;&nbsp;
+				<label><input type="radio" name="orderconfirm" value="禁止" checked="checked"/>禁止</label>
+			</td>
+		</tr>
+		<tr>
+			<td>撤单(文件)：</td>
+			<td><label><input type="radio" name="filewithdraw" value="启用"/>启用</label>&nbsp;&nbsp;&nbsp;&nbsp;
+				<label><input type="radio" name="filewithdraw" value="禁止" checked="checked"/>禁止</label>
+			</td>
+		</tr>
+		<tr>
+			<td>下单流速上限：</td>
+			<td><input type="text" value="0" class="num" id="orderspeed"/>&nbsp;笔 / 秒</td>
+		</tr>
+		<tr>
+			<td>撤单流速上限：</td>
+			<td><input type="text" value="0" class="num" id="withdrawspeed"/>&nbsp;笔 / 秒</td>
+		</tr>
+		<tr>
+			<td>日撤单数上限：</td>
+			<td><input type="text" value="0" class="num" id="withdrawdaily"/>&nbsp;笔</td>
+		</tr>
+		<tr>
+			<td>查询流速上限：</td>
+			<td><input type="text" value="0" class="num" id="searchspeed"/>&nbsp;笔 / 秒</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td style="color:red;">（注意：0 或 空 表示不限制）</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td style="height:40px;">
+				<input type="submit" onclick="ok();" value="确定"/>
+				&nbsp;&nbsp;<input type="reset" onclick="close_layer();" value="取消"/>
+				<a id="errMsg" style="color:red;margin-left:10px;display:none;"></a>
+			</td>
+		</tr>
+	</table>
+</div>
+</body>
+</html>

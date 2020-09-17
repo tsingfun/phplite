@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 主机列表</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<style type="text/css">
+		div.error{ min-height:40%; padding:20px; }
+		#hostAppFrame{min-height:55%;}
+	</style>
+	<script type="text/javascript">
+	
+	// 初始化
+	$().ready( function(){
+		parent.changeLocation('运维 > 主机应用列表');
+		
+	 	// 表格点击选中行
+	    $('table.selectable tr').click(function () {
+	    	if ($(this).parent().find('tr').children('td').eq(0).html() == '暂无数据') return;
+	        var trSeq = $(this).parent().find('tr').index($(this));
+	        if (trSeq > 0){
+	        	$(this).parent().find('tr').removeClass('selected');
+	        	$(this).addClass('selected');
+
+	        	// 请求应用列表
+	        	document.getElementById("hostAppFrame").src = '/hostapp.php?method=hostapplist&IP=' + $(this).children('td').eq(1).text();
+	        }
+	    })
+	    
+	});
+	</script>
+</head>
+
+<body>
+
+<div class="error">
+	<div class="table_title"><i>&nbsp;</i>主机列表</div>
+	<table class="table1 selectable" style="min-width:1000px;">
+		<tr>
+			<th>序号</th>
+			<th>IP</th>
+			<th>主机名称</th>
+			<th>状态</th>
+			<th>CPU (%)</th>
+			<th>Mem (%)</th>
+			<th>硬盘(使用占比/剩余容量)</th>
+			<th>网络</th>
+		</tr>
+		<?php if (!empty($data_host) && isset($data_host['HostData'])) : ?>
+		<?php $i = 0; ?>
+		<?php foreach($data_host['HostData'] as $r): ?>
+			<tr>
+				<td><?php echo ++$i; ?></td>
+				<td><?php echo $r['HostIP'] ?></td>
+				<td class="left"><?php echo $r['HostName'] ?></td>
+				<td style="color:<?php echo $r['HostRemark']=='未注册'?'red':'green' ?>"><?php echo $r['HostRemark'] ?></td>
+				<td><?php echo is_numeric($r['CpuUsage'])?number_format($r['CpuUsage'], 2):$r['CpuUsage'] ?></td>
+				<td><?php echo $r['MemUsage'] ?></td>
+				<td><?php echo $r['DiskUsage'] ?></td>
+				<td><?php echo $r['NetworkUsage'] ?></td>
+			</tr>
+			<?php endforeach ?>
+		<?php else: ?>
+			<tr><td colspan="8">暂无数据</td></tr>
+		<?php endif ?>
+	</table>
+</div>
+
+<iframe id='hostAppFrame' src='/hostapp.php?method=hostapplist' frameborder="0" scrolling="auto" style="width:100%;"></iframe>
+
+</body>
+</html>

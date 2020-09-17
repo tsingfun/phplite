@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 操作日志</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<style type="text/css">
+		div.main { padding:20px; }
+	</style>
+	<script type="text/javascript">
+		window.onload = function(){
+			parent.changeLocation('运维 > 系统管理 > 操作日志');
+		}
+	</script>
+</head>
+
+<body>
+<div class="main">
+	<div style="padding:10px 0 30px 0;">
+		<form action="/user.php?method=oplogs" method="post" name="opLogForm">
+		日志类型：
+		<select name="LogTypeName" onchange="javascript:document.opLogForm.submit();">
+          <?php foreach($data_log_typelist['LogTypeList'] as $r): ?>
+			<option value="<?php echo $r ?>" <?php if ($r == $CurLogTypeName) echo 'selected'; ?> ><?php echo $r ?></option>
+		  <?php endforeach ?>
+        </select>
+		</form>
+	</div>
+
+	<table class="table1">
+		<tr>
+			<th width="50px">序号</th>
+			<th width="100px">类型</th>
+			<th width="180px">IP</th>
+			<th width="150px">操作员</th>
+			<th width="100px">角色</th>
+			<th width="200px">时间</th>
+			<th class="left">信息</th>
+		</tr>
+		<?php if (!empty($data_logs) && isset($data_logs['LogData'])) : ?>
+		<?php $i = 0; ?>
+		<?php foreach($data_logs['LogData'] as $r): ?>
+			<tr>
+				<td><?php echo ++$i; ?></td>
+				<td><?php echo $r['LogTypeName'] ?></td>
+				<td><?php echo $r['HostIP'] ?></td>
+				<td><?php echo $r['UserID'] ?></td>
+				<td><?php echo $r['UserRoleName'] ?></td>
+				<td><?php echo $r['LogTime'] ?></td>
+				<td class="left"><?php echo $r['LogDesc'] ?></td>
+			</tr>
+			<?php endforeach ?>
+		<?php else: ?>
+			<tr><td colspan="7">暂无数据</td></tr>
+		<?php endif ?>
+	</table>
+</div>
+</body>
+</html>

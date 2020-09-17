@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 登录</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="refresh" content="60" />
+	<link href="favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+	<link rel="stylesheet" type="text/css" href="/statics/css/global.css" />
+	
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/statics/js/layer.js"></script>
+	<style type="text/css">
+	body {word-wrap:break-word; min-width:1280px; background:#e3f0f6; }
+	</style>
+	<script type="text/javascript">
+		function showErrMsg(msg){
+			var errMsgObj = document.getElementById('errMsg');
+			errMsgObj.innerText = msg;
+			errMsgObj.style.display = 'inline-block';
+		}
+
+		function checkSubmit(){			
+			var UserId = document.loginForm.UserId.value;
+			if (UserId==''){
+				showErrMsg('用户名不能为空！');
+				return;
+			}
+			
+			var password = document.loginForm.password.value;
+			if (password==''){
+				showErrMsg('密码不能为空！');
+				return;
+			}
+			
+			var VerifyCode = document.loginForm.VerifyCode.value;
+			if (VerifyCode==''){
+				showErrMsg('验证码不能为空！');
+				return;
+			}
+			
+			document.loginForm.submit();
+		}
+		
+		$().ready(function(){
+			
+			//子框架出现登录页面时，使主框架登录
+			if (typeof(parent.mainFrame) != 'undefined') {
+				parent.window.location.href = '/login.php';
+			}
+			
+			// 忘记密码
+			$('.forget').click(function(){
+				layer.open({
+					type: 2,
+					title: '密码找回',
+					maxmin: true,
+					area: ['500px', '240px'],
+					skin: 'layui-layer-rim', //加上边框
+					content: '/forget.php',
+			  	});
+			});
+			
+			//Enter键提交表单
+			$("#loginForm").keydown(function(e){
+				 var e = e || event,
+				 keycode = e.which || e.keyCode;
+				 if (keycode==13) {
+				 	$("#loginbtn").trigger("click");
+				 }
+			});
+		});
+	</script>
+</head>
+
+<body>
+ <!--内容开始-->
+<form method="post" id="loginForm" name="loginForm" action="/login.php?method=dologin">
+<div id="ui_content" class="login_content">
+ <div class="login fn-clear" >
+   <div class="tit1">Wind 交易监控系统1.0 - 用户登录</div>
+   <div class="loginr fr" id="contentBox">
+	<div class="blank30"></div>
+	<span class="red" id="userNameMsg"></span><span class="red" id="pwdMsg"></span><span class="red" id="codeMsg" ></span>
+	 <ul class="loginform">
+	  <li><label>用户名：</label>
+	  	<input name="UserId" id="UserId" type="text" tabindex="1" value="<?php if(get_cookie('saveInfo')=='1') echo get_cookie('UserId'); ?>" />
+	  </li>
+	  <li><label>密　码：</label>
+	  	<input name="password" id="password" type="password" tabindex="2" />
+	  </li>
+	  <li>
+		  <label>验证码：</label>
+		  <input name="VerifyCode" id="VerifyCode" type="text" style="width:50px;" tabindex="3"/>
+		  <img id="verifyCodeImageImg" title="点击刷新" src="/VerifyCode.php" onclick="this.src='/VerifyCode.php?'+Math.random();" class="VerifyCodeImg" name="VerifyCode"/>
+	  </li>
+	 </ul>
+	 <div class="rpass">
+		<input type="checkbox" name="saveInfo" id="saveInfo" value="1" tabindex="4" <?php if(get_cookie('saveInfo')=='1') echo 'checked'?> /><label for="saveInfo">记住用户名</label>
+		<div class="loginbnav">
+		  <a href="javascript:void(0);" class="forget">忘记密码</a>
+		</div>
+	 </div>
+	 <div class="loginbtn"><img src="/statics/images/login_btn.jpg" id="loginbtn" style="cursor:pointer;" onclick="javascript:checkSubmit();"/>
+	 	<a id="errMsg" style="color:red;margin-top:10px;display:none;"></a>
+	 </div>
+   </div>
+   
+   <div id="contentBoxHidden" style="display: none;">
+	    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+		  	<tr>
+		  		<td height="40"></td>
+		  	</tr>
+		  	<tr>
+				<td align="center" height="35"><img src="/statics/images/loading.gif" border="0" /></td>
+			</tr>
+			<tr>
+				<td align="center" height="35" style="color:#FF0000;font-size:12px;">正在登录，请稍候...</td>
+			</tr>
+			<tr><td align="center" height="35"></td></tr>
+		  </table>
+  	</div>
+ </div>
+</div>
+</form>
+ <!--内容结束-->
+ 
+ <!--foot-->
+ <div id="ui_footer">
+   <p class="foot2">万得信息技术股份有限公司版权所有　&copy; 2017 Wind Information All Rights Reserved</p>
+ </div>
+ <!--foot end-->
+</body>
+</html>

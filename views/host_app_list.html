@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 主机应用列表</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/statics/js/layer.js"></script>
+	<style type="text/css">
+		div.info { padding:20px; }
+	</style>
+	<script language="javascript">
+	$().ready( function(){
+		
+		//应用操作确认框
+		$('a.AppOper').click(function(){
+			
+			var ip = '<?php if(isset($IP)) echo $IP;?>';
+			var appname = $(this).parent().parent("tr").children('td').eq(1).html();
+			var opertype = ''; //Start,Stop,Auto,CancelAuto,Deamon,CancelDeamon
+			switch($(this).text()) {
+				case '启动':
+					opertype = 'Start';
+					break;
+				case '停止':
+					opertype = 'Stop';
+					break;
+				case '启用自动启动':
+					opertype = 'Auto';
+					break;
+				case '取消自动启动':
+					opertype = 'CancelAuto';
+					break;
+				case '启用守护':
+					opertype = 'Deamon';
+					break;
+				case '取消守护':
+					opertype = 'CancelDeamon';
+					break;
+			}
+
+			//询问框
+			parent.parent.layer.confirm('确定要' + $(this).text() + '？（' + ip + ', ' + appname + '）', {
+			  btn: ['确认','取消'], //按钮
+			  title: '确认'
+			}, function(){
+			   	//ok
+			   	$.ajax({
+				    url:'/hostapp.php?method=appoper',
+				    data:{'IP':ip, 'AppName':appname, 'OperType':opertype},
+				    type:'GET',
+				    async:true,    //或false,是否异步
+				    timeout:10000,    //超时时间
+				    dataType:'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+				    success:function(data, textStatus, jqXHR){
+				    	if (data['Result'] == '1'){
+				    		
+				    		//------ 执行成功 --------
+				    		parent.parent.layer.alert('操作成功！', {
+				    			icon: 1, 
+				    			end:function(){
+				    				window.location.reload(); // 刷新页面
+				    			}
+				    		});
+				    		
+				    	} else {
+				    		
+				    		//------ 执行失败 --------
+				    		parent.parent.layer.alert('发生错误：' + data['RspInfo'], {icon: 2});
+				    	}
+				    },
+				    error:function(xhr, textStatus) {
+				    	parent.parent.layer.alert('失败[' + textStatus + ']', {icon: 2});
+				    },
+				    complete:function(){
+				    	
+				    }
+				})
+				
+			}, function(){
+			  	//cancel
+			});
+		});
+	
+	});
+	</script>
+</head>
+
+<body>
+
+<div class="info">
+	<div class="table_title"><i>&nbsp;</i>应用列表&nbsp;&nbsp;<?php if(isset($IP)) echo '<a style="color:#ff5300;">('.$IP.')</a>';?></div>
+	<?php if (isset($IP)): ?>
+	<table class="table1">
+		<tr>
+			<th>序号</th>
+			<th>应用名称</th>
+			<th>自启动</th>
+			<th>守护</th>
+			<th>运行状态</th>
+			<th>重启次数</th>
+			<th>CPU (%)</th>
+			<th>Mem</th>
+			<th>连接数</th>
+			<th>吞吐量</th>
+			<th>版本</th>
+			<th>最后一次配置更新时间</th>
+			<th>操作</th>
+		</tr>
+		<?php if (!empty($data_app) && isset($data_app['AppData'])) : ?>
+		<?php $i = 0; ?>
+		<?php foreach($data_app['AppData'] as $r): ?>
+			<tr>
+				<td><?php echo ++$i; ?></td>
+				<td class="left"><?php echo $r['AppName'] ?></td>
+				<td><?php if($r['IsAutoStart']): ?><img src="/statics/images/auto_start.png"/><?php endif ?></td>
+				<td><?php if($r['IsDeamon']): ?><img src="/statics/images/daemon.png"/><?php endif ?></td>
+				
+				<?php if($r['AppRunningStatus']=='运行中'): ?>
+					<td><img src="/statics/images/running.png"/>&nbsp;<?php echo $r['AppRunningStatus'] ?></td>
+				<?php elseif($r['AppRunningStatus']=='未运行'): ?>
+					<td><img src="/statics/images/norun.png"/>&nbsp;<?php echo $r['AppRunningStatus'] ?></td>
+				<?php elseif($r['AppRunningStatus']=='异常退出'): ?>
+					<td><img src="/statics/images/warning.png"/>&nbsp;<?php echo $r['AppRunningStatus'] ?></td>
+				<?php else:?>
+					<td><?php echo $r['AppRunningStatus'] ?></td>
+				<?php endif ?>
+				
+				<td><?php echo $r['AppRestartCount'] ?></td>
+				<td><?php echo $r['AppCpuUsage'] ?></td>
+				<td><?php echo $r['AppMemUsage'] ?></td>
+				<td><?php echo $r['AppConnNum'] ?></td>
+				<td><?php echo $r['AppThroughput'] ?></td>
+				<td><?php echo $r['AppVersion'] ?></td>
+				<td><?php echo $r['LastParamSetTime'] ?></td>
+				<td>
+					<a href="javascript:void(0);" class="AppOper"><?php echo $r['AppRunningStatus']=='运行中'?'停止':'启动' ?></a>&nbsp;&nbsp;
+					<a href="javascript:void(0);" class="AppOper"><?php echo $r['IsAutoStart']?'取消自动启动':'启用自动启动' ?></a>&nbsp;&nbsp;
+					<a href="javascript:void(0);" class="AppOper"><?php echo $r['IsDeamon']?'取消守护':'启用守护' ?></a></td>
+			</tr>
+			<?php endforeach ?>
+			<?php else: ?>
+				<tr><td colspan="13">暂无数据</td></tr>
+			<?php endif ?>
+	</table>
+	<?php else: ?>
+		<div style="color:#ff5300;border:1px solid #d8d8d8;text-align:center;padding:20px;">请选择主机以查看应用列表！</div>
+	<?php endif ?>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _用户管理</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<style type="text/css">
+		div.main { padding:20px 30px; }
+		input[type="text"]{width:320px;}
+	</style>
+	<script type="text/javascript">
+		function close_layer(){
+			var index = parent.layer.getFrameIndex(window.name);
+			parent.layer.close(index);
+		}
+		
+		function showErrMsg(msg){
+			var errMsgObj = document.getElementById('errMsg');
+			errMsgObj.innerText = msg;
+			errMsgObj.style.display = 'inline-block';
+		}
+		
+		// 获取待交互的主框架
+		function MainFrame(){
+			return parent.mainFrame.contentWindow ? parent.mainFrame.contentWindow : parent.mainFrame;
+		}
+		
+		//提交添加/修改
+		function ok(){	
+			var UserID = document.getElementById('UserID').value;
+			if (UserID==''){
+				showErrMsg('用户名不能为空！');
+				return false;
+			}
+			var UserName = document.getElementById('UserName').value;
+			if (UserName==''){
+				showErrMsg('用户姓名不能为空！');
+				return false;
+			}
+			var UserAddr = document.getElementById('UserAddr').value;
+			if (UserAddr==''){
+				showErrMsg('通讯地址不能为空！');
+				return false;
+			}
+			var Tel = document.getElementById('Tel').value;
+			if (Tel==''){
+				showErrMsg('联系电话不能为空！');
+				return false;
+			}
+			var Email = document.getElementById('Email').value;
+			if (Email==''){
+				showErrMsg('E-mail不能为空！');
+				return false;
+			}
+			var expr_email = /^[\w\-\.]+@[\w\-\.]+(\.\w+)+$/;
+			if(!expr_email.test(Email)) {
+				showErrMsg('E-mail格式不正确！');
+				return false;
+			}
+			
+			var UserRoleName = document.getElementById('UserRoleName').value;
+			MainFrame().user_oper_apply('<?php echo $tableid;?>', '<?php echo $oper;?>', UserID, UserName, UserAddr, Tel, Email, UserRoleName);
+			close_layer();
+		}
+		
+		<?php if ($oper=='Mod'): ?>
+		//修改时加载初始数据
+		$().ready(function(){
+			var trObj = $('#<?php echo $tableid;?>', MainFrame().document).find('tr.selected');
+			$('#UserID').val(trObj.children('td').eq(1).text());
+			$('#UserName').val(trObj.children('td').eq(2).text());
+			$('#UserAddr').val(trObj.children('td').eq(3).text());
+			$('#Tel').val(trObj.children('td').eq(4).text());
+			$('#Email').val(trObj.children('td').eq(5).text());
+			$('#UserRoleName').val(trObj.children('td').eq(6).text());
+			
+			$('#UserID').attr("disabled","disabled");
+		});
+		<?php endif ?>
+	</script>
+</head>
+
+<body>
+<div class="main">
+	<table class="tb_layout">
+		<tr>
+			<td style="width:70px;">用户名：</td>
+			<td><input type="text" id="UserID"/></td>
+		</tr>
+		<tr>
+			<td>用户姓名：</td>
+			<td><input type="text" id="UserName"/></td>
+		</tr>
+		<tr>
+			<td>通讯地址：</td>
+			<td><input type="text" id="UserAddr"/></td>
+		</tr>
+		<tr>
+			<td>联系电话：</td>
+			<td><input type="text" id="Tel"/></td>
+		</tr>
+		<tr>
+			<td>E-mail：</td>
+			<td><input type="text" id="Email"/></td>
+		</tr>
+		<tr>
+			<td>角色：</td>
+			<td>
+				<select style="width:325px;height:30px;" id="UserRoleName">
+					<?php if(isset($data_rolelist['RoleData'])): ?>
+		           <?php foreach($data_rolelist['RoleData'] as $r): ?>
+					<option value="<?php echo $r['RoleName']?>"><?php echo $r['RoleName']?></option>
+				   <?php endforeach ?>
+				    <?php endif ?>
+		        </select>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td style="height:40px;">
+				<input type="submit" onclick="ok();" value="确定"/>
+				&nbsp;&nbsp;<input type="reset" onclick="close_layer();" value="取消"/>
+				<a id="errMsg" style="color:red;margin-left:10px;display:none;"></a>
+			</td>
+		</tr>
+	</table>
+</div>
+</body>
+</html>

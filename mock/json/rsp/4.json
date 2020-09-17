@@ -1,0 +1,18 @@
+{
+	"MsgCode":4,
+	"NoticeData":[
+		{
+			"IP":"127.0.0.1",
+			"AppName":"测试应用^o^",
+			"NoticeTime":"2017/09/15 09:00:00",
+			"NoticeInfo":"启动正常。"
+		},
+
+		{
+			"IP":"127.0.0.1",
+			"AppName":"测试应用^o^...",
+			"NoticeTime":"2017/08/15 09:00:00",
+			"NoticeInfo":"启动正常。"
+		}
+	]
+}

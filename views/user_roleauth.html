@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 角色权限</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/statics/js/jquery.treeview.js"></script>
+	<script type="text/javascript" src="/statics/js/layer.js"></script>
+	<style type="text/css">
+		.Level1{ margin:5px; font-weight:bold; }
+		.Level2{ margin:3px; margin-left:20px; }
+		.Level3{ margin:2px; margin-left:40px; }
+	</style>
+<?php if(!empty($roleid)):?>
+	<script type="text/javascript">
+    $(function () {
+        $("input[type='checkbox']").click(function () {
+        	
+        	//--------特殊处理:实时监控-运维，WTS运营-运营，必选-------
+        	var roldid = '<?php echo $roleid;?>';
+        	//实时监控-运维
+        	if (($(this).val() == '1001' || $(this).val() == '1000') && roldid == '2' && !$(this).is(":checked")) {
+        		parent.parent.layer.alert('运维角色必选有"实时监控"菜单！', { icon: 7 });
+        		return false;
+        	}
+        	//WTS运营-运营
+        	if (($(this).val() == '2001' || $(this).val() == '2000') && roldid == '3' && !$(this).is(":checked")) {
+        		parent.parent.layer.alert('运营角色必选有"WTS运营"菜单！', { icon: 7 });
+        		return false;
+        	}
+        	//-------------------------------------------------------
+        	
+            var thisid = $(this).attr("id");
+            var isSel = $(this).is(":checked");
+            selectChkbox(thisid, isSel);
+            selectParentChkbox($(this));
+        });
+    });
+    //变更子节点
+    function selectChkbox(parentid, isSel) {
+    	$("input[type='checkbox'][data-parent='" + parentid + "']").each(function () {
+            $(this).prop("checked", isSel);
+            selectChkbox($(this).attr("id"), isSel);
+        });
+    }
+    //变更父节点
+    function selectParentChkbox(clickINP) {
+        var parentid = clickINP.attr("data-parent");
+        if (parentid != "") {
+            if (!clickINP.is(":checked")) {
+                selectParentChkF(parentid);
+            } else {
+                selectParentChkT(parentid);
+            }
+        }        
+    }
+    function selectParentChkF(parentid) {    	
+    	//判断该父节点下所有子节点都未勾选才能取消勾选
+    	var allUnChecked = true;
+        $("input[type='checkbox'][data-parent='" + parentid + "']").each(function () {
+            if ($(this).is(":checked")) {
+            	allUnChecked = false;
+            	return false; //=break;
+            }
+        });
+        
+        if (allUnChecked)    	
+        	$("#" + parentid).prop("checked", false);
+        
+        parentid = $("#" + parentid).attr("data-parent");
+        if (parentid != "")
+            selectParentChkF(parentid);
+    }
+    function selectParentChkT(parentid) {
+        $("#" + parentid).prop("checked", true);
+        parentid = $("#" + parentid).attr("data-parent");
+        if (parentid != "")
+        	selectParentChkT(parentid);
+    }
+
+    function ok() {
+    	var menuStr = '';
+    	var i = 0;
+    	$("input[type='checkbox']:checked").each(function () {
+    		if (i++ != 0)
+    			menuStr += ',';
+    		menuStr += $(this).val();
+        });
+    	//alert(menuStr); return false;
+    	
+    	//ok
+	   	$.ajax({
+		    url:'/user.php?method=rolemenuapply',
+		    data:{'RoleID':<?php echo $roleid;?>, 'RoleMenuData':menuStr},
+		    type:'POST',
+		    async:true,    //或false,是否异步
+		    timeout:10000,    //超时时间
+		    dataType:'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+		    success:function(data, textStatus, jqXHR){
+		    	if (data['Result'] == '1'){
+		    		
+		    		//------ 执行成功 --------
+		    		parent.parent.layer.alert('角色权限保存成功！', { icon: 1 });
+		    		
+		    	} else {
+		    		
+		    		//------ 执行失败 --------
+		    		parent.parent.layer.alert('发生错误：' + data['RspInfo'], {icon: 2});
+		    	}
+		    },
+		    error:function(xhr, textStatus) {
+		    	parent.parent.layer.alert('失败[' + textStatus + ']', {icon: 2});
+		    },
+		    complete:function(){
+		    	
+		    }
+		})
+    	
+    	return false;
+    }
+    </script>
+<?php endif ?>
+</head>
+
+<body>
+<div class="main">
+
+	<div class="table_title"><i>&nbsp;</i>角色权限&nbsp;&nbsp;<?php if(isset($rolename)) echo '<a style="color:#ff5300;">('.$rolename.')</a>';?></div>
+	
+	<?php if (!empty($data_menulist) && isset($data_menulist['MenuData'])) : ?>
+	
+	<form action="" method="post" id="roleForm" name="roleForm">
+	
+	<?php foreach($data_menulist['MenuData'] as $r): ?>
+		<label><input id="<?php echo $r['MenuID'];?>" data-parent="<?php echo $r['ParentMenuID'];?>"
+		 type="checkbox" value="<?php echo $r['MenuID'];?>" class="Level<?php echo $r['MenuLevel'];?>" 
+		 <?php if (in_array($r['MenuID'], $arr_rolemenu)) echo 'checked';?> /><?php echo $r['MenuName'];?></label><br/>
+	<?php endforeach ?>
+	
+	<br/>
+	<input type="submit" onclick="return ok();" style="margin-left:7px;" value="保存"/>
+	</form>
+	
+	<?php else: ?>
+		<div style="color:#ff5300;padding:10px 0;">请选择左侧的角色以查看菜单权限！</div>
+	<?php endif ?>
+
+</div>
+</body>
+</html>

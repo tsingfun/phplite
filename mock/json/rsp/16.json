@@ -1,0 +1,22 @@
+{
+	"MsgCode":16,
+	"UserData":[
+		{
+			"UserID":"test001",
+			"UserName":"张三",
+			"UserAddr":"Shanghai",
+			"Tel":"021-12345678",
+			"Email":"aa@aa.com",
+			"UserRoleName":"运维"
+		},
+		
+		{
+			"UserID":"test002",
+			"UserName":"李四",
+			"UserAddr":"Shanghai",
+			"Tel":"021-12345678",
+			"Email":"aa@aa.com",
+			"UserRoleName":"运营"
+		}
+	]
+}

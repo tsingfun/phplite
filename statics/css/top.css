@@ -1,0 +1,28 @@
+/* header */
+#head {
+	height: 78px;
+	background: url(../images/banner04.jpg) repeat-x;
+}
+
+#head .topRight{
+	background:url(../images/banner03.jpg) right;
+	width:559px;
+	height:78px;
+	float:right
+}
+#head .topRight p{
+	text-align:right;
+	padding-right:15px;
+	padding-top:55px
+}
+#topmenu {
+	background:url(../images/nav_bg.jpg) repeat-x;
+	width:100%; 
+	height:6px;
+	overflow:hidden; 
+	clear:both
+}
+
+.alltitle{background:url(../images/alltitle.jpg) repeat-x; height:22px; text-align:right; width:100%;}
+.alltitle ul{padding:2px;}
+.alltitle ul li{display:inline; margin:0 5px;    color: #FF5300;}

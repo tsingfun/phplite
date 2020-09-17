@@ -1,0 +1,24 @@
+{
+	"MsgCode":6,
+	"HostData":[
+		{
+			"HostIP":"10.102.16.103",
+			"HostName":"PB1",
+			"HostRemark":"ÒÑ×¢²á",
+			"CpuUsage":"12 %",
+			"MemUsage":"45 %",
+			"DiskUsage":"C: 81% D: 20%",
+			"NetworkUsage":"1 MB/s"
+		},
+		
+		{
+			"HostIP":"10.102.16.104",
+			"HostName":"PB2",
+			"HostRemark":"Î´×¢²á",
+			"CpuUsage":"1 %",
+			"MemUsage":"56 %",
+			"DiskUsage":"C: 41% D: 20%",
+			"NetworkUsage":"0.33 MB/s"
+		}
+	]
+}

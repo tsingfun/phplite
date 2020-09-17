@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Wind 交易监控系统1.0 _ 组别管理</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/statics/css/global.css?<?php echo time();?>"/>
+	<script type="text/javascript" src="/statics/js/jquery.min.js"></script>
+	<style type="text/css">
+		div.main { padding:20px 30px; }
+		input[type="text"]{width:320px;}
+	</style>
+	<script type="text/javascript">
+		function close_layer(){
+			var index = parent.layer.getFrameIndex(window.name);
+			parent.layer.close(index);
+		}
+		
+		function showErrMsg(msg){
+			var errMsgObj = document.getElementById('errMsg');
+			errMsgObj.innerText = msg;
+			errMsgObj.style.display = 'inline-block';
+		}
+		
+		// 获取待交互的主框架
+		function MainFrame(){
+			return parent.mainFrame.contentWindow ? parent.mainFrame.contentWindow : parent.mainFrame;
+		}
+		
+		//提交添加/删除
+		function ok(){
+			var AppGroup = document.getElementById('AppGroup').value;
+			if (AppGroup==''){
+				showErrMsg('组别不能为空！');
+				return false;
+			}
+			
+			<?php if ($oper=='Add'): ?>
+			var group_list = new Array();
+			  <?php if (!empty($data_appgroup) && isset($data_appgroup['AppGroupList'])) : ?>
+	          <?php foreach($data_appgroup['AppGroupList'] as $r): ?>
+	          	group_list.push('<?php echo $r;?>');
+			  <?php endforeach ?>
+			  <?php endif ?>
+			
+			if (group_list.indexOf(AppGroup) >= 0) {
+				showErrMsg('该组别已存在！');
+				return false;
+			}
+			<?php endif ?>
+			
+			MainFrame().app_group_apply('<?php echo $oper;?>', '<?php echo $AppName;?>', AppGroup);
+			close_layer();
+		}
+	</script>
+</head>
+
+<body>
+<div class="main">
+	<table class="tb_layout">
+		<tr>
+			<td>应用：</td>
+			<td><b><?php echo $AppName;?></b></td>
+		</tr>
+		<?php if ($oper=='Del'): ?>
+		<tr>
+			<td>组别：</td>
+			<td>
+				<select style="width:325px;height:30px;" id="AppGroup">
+				  <?php if (!empty($data_appgroup) && isset($data_appgroup['AppGroupList'])) : ?>
+		          <?php foreach($data_appgroup['AppGroupList'] as $r): ?>
+					<option value="<?php echo $r ?>" ><?php echo $r ?></option>
+				  <?php endforeach ?>
+				  <?php endif ?>
+		        </select>
+			</td>
+		</tr>
+		<?php else: ?>
+		<tr>
+			<td>组别：</td>
+			<td><input type="text" id="AppGroup"/></td>
+		</tr>
+		<?php endif ?>
+		<tr>
+			<td></td>
+			<td style="height:40px;">
+				<input type="submit" onclick="ok();" value="确定"/>
+				&nbsp;&nbsp;<input type="reset" onclick="close_layer();" value="取消"/>
+				<a id="errMsg" style="color:red;margin-left:10px;display:none;"></a>
+			</td>
+		</tr>
+	</table>
+</div>
+</body>
+</html>

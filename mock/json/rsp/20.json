@@ -1,0 +1,126 @@
+{
+	"MsgCode":20,
+	"MenuData":[
+		{
+			"MenuID":"1000",
+			"MenuLevel":1,
+			"MenuName":"运维",			
+			"ParentMenuID":""
+		},
+		
+		{
+			"MenuID":"1001",
+			"MenuLevel":2,
+			"MenuName":"实时监控",
+			"ParentMenuID":"1000"
+		},
+		
+		
+		{
+			"MenuID":"1010",
+			"MenuLevel":2,
+			"MenuName":"参数设置",
+			"ParentMenuID":"1000"
+		},
+		{
+			"MenuID":"1011",
+			"MenuLevel":3,
+			"MenuName":"WTS",
+			"ParentMenuID":"1010"
+		},
+		{
+			"MenuID":"1012",
+			"MenuLevel":3,
+			"MenuName":"EMS.Manager",
+			"ParentMenuID":"1010"
+		},
+		{
+			"MenuID":"1013",
+			"MenuLevel":3,
+			"MenuName":"EMS.Engine",
+			"ParentMenuID":"1010"
+		},
+		{
+			"MenuID":"1014",
+			"MenuLevel":3,
+			"MenuName":"PB.Quotation",
+			"ParentMenuID":"1010"
+		},
+		
+		
+		
+		{
+			"MenuID":"1020",
+			"MenuLevel":2,
+			"MenuName":"主机应用列表",
+			"ParentMenuID":"1000"
+		},
+		{
+			"MenuID":"1021",
+			"MenuLevel":3,
+			"MenuName":"EMS",
+			"ParentMenuID":"1020"
+		},
+		{
+			"MenuID":"1022",
+			"MenuLevel":3,
+			"MenuName":"PB",
+			"ParentMenuID":"1020"
+		},
+		
+		
+		
+		{
+			"MenuID":"1030",
+			"MenuLevel":2,
+			"MenuName":"系统管理",
+			"ParentMenuID":"1000"
+		},
+		{
+			"MenuID":"1031",
+			"MenuLevel":3,
+			"MenuName":"主机管理",
+			"ParentMenuID":"1030"
+		},
+		{
+			"MenuID":"1032",
+			"MenuLevel":3,
+			"MenuName":"应用管理",
+			"ParentMenuID":"1030"
+		},
+		{
+			"MenuID":"1033",
+			"MenuLevel":3,
+			"MenuName":"操作日志",
+			"ParentMenuID":"1030"
+		},
+		{
+			"MenuID":"1034",
+			"MenuLevel":3,
+			"MenuName":"用户权限",
+			"ParentMenuID":"1030"
+		},
+		{
+			"MenuID":"1035",
+			"MenuLevel":3,
+			"MenuName":"系统设置",
+			"ParentMenuID":"1030"
+		},
+		
+		
+		{
+			"MenuID":"2000",
+			"MenuLevel":1,
+			"MenuName":"运营",
+			"ParentMenuID":""
+		},
+		
+		{
+			"MenuID":"2001",
+			"MenuLevel":2,
+			"MenuName":"WTS运营",
+			"ParentMenuID":"2000"
+		}
+		
+	]
+}
